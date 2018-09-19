@@ -18,7 +18,6 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.valence.freemeper.cusview.CircleImage;
-import com.valence.freemeper.cusview.CircleImage1;
 import com.valence.freemeper.cusview.MarginBean;
 import com.valence.freemeper.database.DatabaseHelper;
 
@@ -261,21 +260,6 @@ public class CommonMethod {
     }
 
     public static void setImageMargin(boolean isOutSide, CircleImage image, MarginBean marginBean, int imageSize) {
-        if (!isMarginValid(marginBean, imageSize)) return;
-        ViewGroup.MarginLayoutParams param = (ViewGroup.MarginLayoutParams) image.getLayoutParams();
-        int left = marginBean.getLeft();
-        int top = marginBean.getTop();
-        int right = marginBean.getRight();
-        int bottom = 0;
-        int image_margin = marginBean.getMargin();
-        if (!isOutSide) {
-            if (image_margin == 0) param.setMargins(left, top, right, bottom);
-            else param.setMargins(image_margin, image_margin, image_margin, 0);
-        } else param.setMargins(left, top, right, bottom);
-        image.setLayoutParams(param);
-    }
-
-    public static void setImageMargin(boolean isOutSide, CircleImage1 image, MarginBean marginBean, int imageSize) {
         if (!isMarginValid(marginBean, imageSize)) return;
         ViewGroup.MarginLayoutParams param = (ViewGroup.MarginLayoutParams) image.getLayoutParams();
         int left = marginBean.getLeft();

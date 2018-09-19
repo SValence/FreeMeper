@@ -138,8 +138,6 @@ public class MainActivity extends BaseActivity implements IFindView, View.OnClic
             if (mPopWindow.isShowing()) {
                 mPopWindow.dismiss();
             }
-            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
-            startActivity(intent);
         }
     }
 
