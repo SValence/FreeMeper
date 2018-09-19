@@ -1,0 +1,74 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/defaultThemeColor</item>
+        <item name="colorPrimaryDark">@color/defaultThemeBackColor</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="android:navigationBarColor">@color/defaultThemeBackColor</item>-->
+    </style>
+
+    <style name="WelcomeTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@color/white</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!-- 自定义格式style -->
+    <style name="NULLView">
+        <item name="android:layout_width">0sp</item>
+        <item name="android:layout_height">0sp</item>
+    </style>
+
+    <style name="MainContainerIV">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@drawable/bg_free_ripple_component</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="MainContainerText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/deepGray</item>
+    </style>
+
+    <style name="PopupMenuStyle">
+        <item name="android:windowEnterAnimation">@anim/anim_pop_enter</item>
+        <item name="android:windowExitAnimation">@anim/anim_pop_exit</item>
+    </style>
+
+    <style name="BottomToolText">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/defaultThemeBackColor</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/bg_free_ripple_menu_item</item>
+    </style>
+
+    <style name="ImageGroupTextStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="group_bc">@color/white</item>
+        <item name="group_bw">1dp</item>
+        <item name="group_clickable">true</item>
+        <item name="group_ellipsize">END</item>
+        <item name="group_fg">@drawable/fg_valence_ripple_component</item>
+        <item name="group_img_gv">center</item>
+        <item name="group_img_margin">10dp</item>
+        <item name="group_img_size">150</item>
+        <item name="group_maxLines">1</item>
+        <item name="group_tc">@color/deepGray</item>
+        <item name="group_tg">center</item>
+        <item name="group_ts">@dimen/free_main_item_ts</item>
+    </style>
+
+</resources>

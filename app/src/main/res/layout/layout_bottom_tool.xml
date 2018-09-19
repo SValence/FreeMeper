@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/free_bottom_tool_size"
+    android:layout_gravity="bottom"
+    android:layout_marginBottom="7dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginStart="5dp"
+    android:background="@drawable/bg_free_bottom_tool"
+    android:orientation="horizontal"
+    android:paddingEnd="@dimen/free_bottom_tool_radius"
+    android:paddingStart="@dimen/free_bottom_tool_radius"
+    android:splitMotionEvents="false">
+
+    <TextView
+        android:id="@+id/free_bottom_select_all"
+        style="@style/BottomToolText"
+        android:text="@string/free_select_all" />
+
+    <TextView
+        android:id="@+id/free_bottom_all_unSelect"
+        style="@style/BottomToolText"
+        android:text="@string/free_select_all_not"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/free_bottom_select_back"
+        style="@style/BottomToolText"
+        android:text="@string/free_select_back" />
+
+    <TextView
+        android:id="@+id/free_bottom_delete"
+        style="@style/BottomToolText"
+        android:text="@string/free_delete" />
+
+    <TextView
+        android:id="@+id/free_bottom_rename"
+        style="@style/BottomToolText"
+        android:text="@string/rename" />
+</LinearLayout>

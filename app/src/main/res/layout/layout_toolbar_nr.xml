@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/free_tool_size"
+    android:background="@color/defaultThemeColor"
+    android:orientation="horizontal"
+    android:splitMotionEvents="false">
+
+    <ImageView
+        android:id="@+id/free_tool_left_img"
+        android:layout_width="@dimen/free_tool_size"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/bg_free_ripple_default"
+        android:clickable="true"
+        android:contentDescription="@string/app_name"
+        android:focusable="true"
+        android:padding="@dimen/free_tool_padding"
+        android:src="@drawable/svg_free_back" />
+
+    <View
+        android:id="@+id/free_tool_v"
+        android:layout_width="@dimen/free_tool_size"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:background="@color/transparent" />
+
+    <TextView
+        android:id="@+id/free_tool_tip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@+id/free_tool_left_img"
+        android:layout_toStartOf="@id/free_tool_v"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/free_tool_textSize" />
+</RelativeLayout>

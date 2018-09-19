@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.valence.freemeper.function.main.DefinedHorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none"
+    tools:context=".function.main.MainActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/defaultThemeColor"
+        android:fitsSystemWindows="true"
+        android:minHeight="?attr/actionBarSize"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/defaultThemeColor"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="200sp"
+                android:layout_height="50sp"
+                android:layout_marginStart="20sp"
+                android:layout_marginTop="50sp"
+                android:background="@drawable/bg_free_ripple_component"
+                android:text="@string/app_name" />
+
+        </LinearLayout>
+
+        <com.valence.freemeper.cusview.ChildClickableLinearLayout
+            android:id="@+id/freeMainPage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/defaultThemeColor"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:orientation="horizontal"
+                android:splitMotionEvents="false">
+
+                <FrameLayout
+                    android:id="@+id/freeMainMenu"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_free_ripple_default">
+
+                    <ImageView
+                        android:layout_width="30sp"
+                        android:layout_height="30sp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/app_name"
+                        android:src="@drawable/svg_free_menu" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:text="@string/app_name"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <FrameLayout
+                    android:id="@+id/freeMainPerson"
+                    android:layout_width="0sp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_free_ripple_default"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="30sp"
+                        android:layout_height="30sp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/app_name"
+                        android:src="@mipmap/free_setting_menu" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/defaultThemeBackColor">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    tools:ignore="ScrollViewSize">
+
+                    <LinearLayout
+                        android:id="@+id/freeMainContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/bg_free_rectangle_border"
+                        android:orientation="vertical"
+                        android:splitMotionEvents="false">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:splitMotionEvents="false">
+
+                            <com.valence.freemeper.cusview.ImageTextGroup
+                                android:id="@+id/freeMainVideo"
+                                style="@style/ImageGroupTextStyle"
+                                app:group_src="@mipmap/free_video"
+                                app:group_text="VideoPlayer" />
+
+                            <com.valence.freemeper.cusview.ImageTextGroup
+                                android:id="@+id/freeMainAlbum"
+                                style="@style/ImageGroupTextStyle"
+                                app:group_src="@mipmap/free_image"
+                                app:group_text="ImageViewer" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:splitMotionEvents="false">
+
+                            <com.valence.freemeper.cusview.ImageTextGroup
+                                android:id="@+id/freeMainCamera"
+                                style="@style/ImageGroupTextStyle"
+                                app:group_src="@mipmap/free_camera"
+                                app:group_text="CameraViewer" />
+
+                            <com.valence.freemeper.cusview.ImageTextGroup
+                                android:id="@+id/freeMainMusic"
+                                style="@style/ImageGroupTextStyle"
+                                app:group_src="@mipmap/free_music"
+                                app:group_text="MusicPlayer" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:splitMotionEvents="false">
+
+                            <com.valence.freemeper.cusview.ImageTextGroup
+                                android:id="@+id/freeMainAudio"
+                                style="@style/ImageGroupTextStyle"
+                                app:group_src="@mipmap/free_audio"
+                                app:group_text="AudioManager" />
+
+                            <com.valence.freemeper.cusview.ImageTextGroup
+                                android:id="@+id/freeMainBluetooth"
+                                style="@style/ImageGroupTextStyle"
+                                app:group_src="@mipmap/free_bluetooth"
+                                app:group_text="Bluetooth" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:splitMotionEvents="false">
+
+                            <com.valence.freemeper.cusview.ImageTextGroup
+                                android:id="@+id/freeMainText"
+                                style="@style/ImageGroupTextStyle"
+                                app:group_src="@mipmap/free_text"
+                                app:group_text="TextViewer" />
+
+                            <com.valence.freemeper.cusview.ImageTextGroup
+                                android:id="@+id/freeMainAbout"
+                                style="@style/ImageGroupTextStyle"
+                                app:group_src="@mipmap/free_more"
+                                app:group_text="About" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </FrameLayout>
+            </ScrollView>
+        </com.valence.freemeper.cusview.ChildClickableLinearLayout>
+    </LinearLayout>
+
+</com.valence.freemeper.function.main.DefinedHorizontalScrollView>

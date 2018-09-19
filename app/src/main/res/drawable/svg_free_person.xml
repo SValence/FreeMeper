@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="126sp"
+    android:width="144sp"
+    android:viewportHeight="84"
+    android:viewportWidth="96" >
+
+    <group
+        android:name="rotationGroup"
+        android:pivotX="250.0"
+        android:pivotY="250.0"
+        android:rotation="0" >
+        <!-- 不知道这个属性是什么意思   pivotX -->
+        <path
+            android:name="square"
+            android:fillColor="#ffffff"
+            android:pathData="M 43.35 8.56 
+            				  C 52.12 6.07 62.61 11.33 64.56 20.54 
+            				  C 65.37 25.82 65.54 31.55 63.29 36.54 
+            				  C 61.76 40.26 58.72 43.19 57.45 47.04 
+            				  C 56.96 48.88 58.56 50.20 59.87 51.14 
+            				  C 66.37 55.33 73.68 58.30 79.65 63.29 
+            				  C 82.93 65.83 83.48 70.33 82.84 74.16 
+            				  C 82.33 76.76 79.59 78.28 77.07 78.00 
+            				  C 57.70 78.00 38.34 78.00 18.97 78.00 
+            				  C 16.44 78.30 13.69 76.79 13.17 74.18 
+            				  C 12.51 70.35 13.06 65.84 16.34 63.30 
+            				  C 22.31 58.31 29.62 55.34 36.12 51.15 
+            				  C 37.76 50.14 39.44 48.16 38.24 46.16 
+            				  C 35.93 41.36 32.00 37.28 31.22 31.81 
+            				  C 30.86 27.00 30.40 21.85 32.54 17.37 
+            				  C 34.45 12.90 38.71 9.73 43.35 8.56 Z" />
+    </group>
+
+</vector>

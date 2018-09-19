@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">FreeMeper</string>
+    <string name="main_tip">MainPager</string>
+    <string name="free_appName_EN">FreeMeper</string>
+    <string name="free_appName_CN">多媒体管理</string>
+    <string name="free_welcome_allRights">©2017, Valence.Soft. All Rights Reserved</string>
+    <string name="free_video">VideoPlayer</string>
+    <string name="free_image">ImageViewer</string>
+    <string name="free_music">MusicPlayer</string>
+    <string name="free_text">TextViewer</string>
+    <string name="free_introduce">Introduce</string>
+    <string name="free_about">MoreAbout</string>
+    <string name="free_setting">Setting</string>
+    <string name="free_image_num">pictures</string>
+    <string name="free_skip">SKIP(%d)</string>
+    <string name="free_album">AlbumViewer</string>
+    <string name="free_select_all">Select All</string>
+    <string name="free_select_all_not">All Not Select</string>
+    <string name="free_delete">Delete</string>
+    <string name="free_have_select">SELECT %1$d ALBUM</string>
+    <string name="free_select_back">Select Back Forward</string>
+    <string name="free_about_default_text">VALENCE0001</string>
+    <string name="free_default_version">V1.0.0.0 beta</string>
+    <string name="free_device_id">Device ID</string>
+    <string name="free_model">Device Model Number</string>
+    <string name="free_hard_version">Hardware Version</string>
+    <string name="free_version">Software Version</string>
+    <string name="free_upgrade">Check For Update</string>
+    <string name="free_video_num">videos</string>
+    <string name="video">Video</string>
+    <string name="has_select_list">已选择: %1$d 个列表</string>
+    <string name="rename">Rename</string>
+    <string name="loading">正在加载, 请稍候...</string>
+</resources>

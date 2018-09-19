@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleImageView">
+        <attr name="border_width" format="dimension" />
+        <attr name="border_color" format="color" />
+        <attr name="border_overlay" format="boolean" />
+        <attr name="bottom_text" format="string" />
+        <attr name="bottom_text_color" format="color" />
+        <attr name="bottom_text_size" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="CircleImage">
+        <attr name="border_width_c" format="dimension" />
+        <attr name="border_color_c" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="ImageTextGroup">
+        <attr name="group_bg" format="reference" />                 <!-- ViewGroup 背景 -->
+        <attr name="group_fg" format="reference" />                 <!-- ViewGroup 前景 -->
+        <attr name="group_bw" format="dimension" />                 <!-- ViewGroup 边框宽度 -->
+        <attr name="group_clickable" format="boolean" />            <!-- ViewGroup 是否可点击 -->
+        <attr name="group_img_size" format="integer">             <!-- ViewGroup 圆形image大小 -->
+            <enum name="match_parent" value="-1" />
+            <enum name="wrap_content" value="-2" />
+        </attr>
+        <!--<attr name="group_iw" format="dimension">-->
+        <!--<enum name="match_parent" value="-1" />-->
+        <!--<enum name="wrap_content" value="-2" />-->
+        <!--</attr>                                                     &lt;!&ndash; &ndash;&gt;-->
+        <!--<attr name="group_ih" format="dimension">-->
+        <!--<enum name="match_parent" value="-1" />-->
+        <!--<enum name="wrap_content" value="-2" />-->
+        <!--</attr>                                                     &lt;!&ndash; &ndash;&gt;-->
+        <attr name="group_src" format="reference" />                <!-- -->
+        <attr name="group_bc" format="color" />                     <!-- -->
+        <attr name="group_text" format="string" />                  <!-- -->
+        <attr name="group_tc" format="color" />                     <!-- -->
+        <attr name="group_ts" format="dimension" />                 <!-- -->
+        <attr name="group_tg" format="string" />                    <!-- -->
+        <attr name="group_img_gv" format="integer">
+            <enum name="left" value="-1" />
+            <enum name="center" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+        <attr name="group_ellipsize" format="integer">
+            <enum name="START" value="-1" />
+            <enum name="END" value="0" />
+            <enum name="MIDDLE" value="1" />
+        </attr>
+        <attr name="group_maxLines" format="integer" />
+        <attr name="group_img_marStart" format="dimension" />       <!-- -->
+        <attr name="group_img_marEnd" format="dimension" />         <!-- -->
+        <attr name="group_img_marTop" format="dimension" />         <!-- -->
+        <attr name="group_img_marBottom" format="dimension" />      <!-- -->
+        <attr name="group_img_margin" format="dimension" />         <!-- -->
+    </declare-styleable>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="setting_item_height">60dp</dimen>
+    <dimen name="free_tool_size">50dp</dimen>
+    <dimen name="free_tool_padding">15dp</dimen>
+    <dimen name="free_tool_textSize">20sp</dimen>
+    <dimen name="free_bottom_tool_container_size">50dp</dimen>
+    <dimen name="free_bottom_tool_size">40dp</dimen>
+    <dimen name="free_bottom_tool_radius">20dp</dimen>
+
+    <dimen name="free_main_item_ts">20sp</dimen>
+</resources>
