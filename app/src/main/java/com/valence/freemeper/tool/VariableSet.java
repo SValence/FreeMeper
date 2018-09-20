@@ -10,9 +10,11 @@ import android.graphics.Color;
 public class VariableSet {
     public final static double SIN_TWENTY = Math.sin(Math.PI * 20 / 180.0);
 
+    public final static double SIN_THIRTY = Math.sin(Math.PI * 40 / 180.0);
+
     public final static double SIN_FORTY = Math.sin(Math.PI * 40 / 180.0);
 
-    public final static double MOVE_MAX_VALID_LEN = 10.0;
+    public final static double MOVE_MAX_VALID_LEN = 15.0;
 
     public final static int NUM_ZERO = 0;
 
@@ -36,7 +38,7 @@ public class VariableSet {
 
     public static final int DEFAULT_WIDTH = 0;
 
-    public static final int DEFAULT_SIZE_DIFF = 15;
+    public static final int DEFAULT_SIZE_DIFF = 0;
 
     public static final String GRAVITY_CENTER = "center";
 

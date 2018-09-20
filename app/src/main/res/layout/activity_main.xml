@@ -23,12 +23,18 @@
             android:orientation="vertical">
 
             <Button
-                android:layout_width="200sp"
-                android:layout_height="50sp"
-                android:layout_marginStart="20sp"
-                android:layout_marginTop="50sp"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="50dp"
                 android:background="@drawable/bg_free_ripple_component"
                 android:text="@string/app_name" />
+
+            <!-- Test Layout -->
+            <!--<com.valence.freemeper.cusview.ImageTextGroup-->
+                <!--style="@style/ImageGroupTextStyle1"-->
+                <!--app:group_src="@mipmap/free_text"-->
+                <!--app:group_text="TextViewer" />-->
 
         </LinearLayout>
 
@@ -111,7 +117,8 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
+                            android:baselineAligned="false"
                             android:orientation="horizontal"
                             android:splitMotionEvents="false">
 
@@ -130,7 +137,8 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
+                            android:baselineAligned="false"
                             android:orientation="horizontal"
                             android:splitMotionEvents="false">
 
@@ -149,7 +157,8 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
+                            android:baselineAligned="false"
                             android:orientation="horizontal"
                             android:splitMotionEvents="false">
 
@@ -168,7 +177,8 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
+                            android:baselineAligned="false"
                             android:orientation="horizontal"
                             android:splitMotionEvents="false">
 

@@ -27,6 +27,9 @@ import android.view.animation.AlphaAnimation;
 
 import com.valence.freemeper.R;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static com.valence.freemeper.tool.CommonMethod.isMarginValid;
 import static com.valence.freemeper.tool.CommonMethod.setImageMargin;
 import static com.valence.freemeper.tool.VariableSet.DEFAULT_COLOR;
 import static com.valence.freemeper.tool.VariableSet.DEFAULT_SIZE_DIFF;
@@ -66,6 +69,7 @@ public class CircleImage extends AppCompatImageView {
     private AlphaAnimation alphaAnimation;
     private int textSize;
     private MarginBean marginBean;
+    private boolean measured = false;
 
     public CircleImage(Context context) {
         super(context);
@@ -156,30 +160,63 @@ public class CircleImage extends AppCompatImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        ViewGroup mViewGroup = (ViewGroup) getParent();
-        int height = mViewGroup.getLayoutParams().height;
-        int width = mViewGroup.getLayoutParams().width;
+        if (!measured) {
+            ViewGroup mViewGroup = (ViewGroup) getParent().getParent();
+            ViewGroup.LayoutParams params = mViewGroup.getLayoutParams();
+            if (params.height == WRAP_CONTENT) params.height = MATCH_PARENT;
+            mViewGroup.setLayoutParams(params);
+            int height = params.height;
+            int width = params.width;
 //        Log.e(TAG, "Parent height:" + height + "----width:" + width);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int maxSize;
-        if (height <= 0 && width <= 0) {
-            maxSize = getMaxSize(heightSize, widthSize);
+            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            int suitSize;
+            if (height <= 0) height = heightSize;
+            if (width <= 0) width = widthSize;
+            suitSize = getFitSizeWithText(height, width, true);
+            setImageMargin(false, this, marginBean, suitSize);
+            suitSize = reSize(marginBean, suitSize);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(suitSize, widthMode);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(suitSize, heightMode);
+//            setMeasuredDimension(suitSize, suitSize);
+//            setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
+            setMaxHeight(suitSize);
+            setMaxWidth(suitSize);
+            measured = true;
         } else {
-            maxSize = getMaxSize(height, width);
+            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            int height = getMeasuredHeight();
+            int width = getMeasuredWidth();
+            int maxHeight = getMaxHeight();
+            int maxWidth = getMaxWidth();
+            int suitSize = getFitSizeWithText(getFitSizeWithText(height, width, false),
+                    getFitSizeWithText(maxHeight, maxWidth, false), false);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(suitSize, widthMode);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(suitSize, heightMode);
+            setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
         }
-        widthMeasureSpec = MeasureSpec.makeMeasureSpec(maxSize, widthMode);
-        heightMeasureSpec = MeasureSpec.makeMeasureSpec(maxSize, heightMode);
-        setImageMargin(false, this, marginBean, maxSize);
-//        setMeasuredDimension(maxSize, maxSize);
-
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    private int getMaxSize(int height, int width) {
+    private int reSize(MarginBean marginBean, int size) {
+        int reSize = size;
+        if (isMarginValid(marginBean, size)) {
+            if (marginBean.getMargin() == 0) {
+                reSize = size - Math.max(marginBean.getLeft() + marginBean.getRight(), marginBean.getTop());
+            } else {
+                reSize = size - 2 * marginBean.getMargin();
+            }
+        }
+        return reSize;
+    }
+
+    private int getFitSizeWithText(int height, int width, boolean needText) {
         int size;
+        int textSize = needText ? this.textSize : 0;
+        int default_size_diff = needText ? DEFAULT_SIZE_DIFF : 0;
         if (height == 0 || width == 0) {
             int max = Math.max(height, width);
             if (max == 0) {
@@ -192,9 +229,9 @@ public class CircleImage extends AppCompatImageView {
         int size1 = size;
         // 在图片下方留出 text_ts + DEFAULT_SIZE_DIFF 的空间来显示文字
         if (size == height) {
-            size = size - textSize - DEFAULT_SIZE_DIFF;
-        } else if (diff <= textSize + DEFAULT_SIZE_DIFF)
-            size = size - textSize - DEFAULT_SIZE_DIFF + diff >= DEFAULT_SIZE_DIFF ? 0 : diff;
+            size = size - textSize - default_size_diff;
+        } else if (diff <= textSize + default_size_diff)
+            size = size - textSize - default_size_diff + diff >= default_size_diff ? 0 : diff;
         if (size <= 0) return size1;
         return size;
     }
@@ -270,7 +307,10 @@ public class CircleImage extends AppCompatImageView {
         mBitmapHeight = mBitmap.getHeight();
         mBitmapWidth = mBitmap.getWidth();
 
-        int size = Math.min(getWidth(), getHeight());
+        int height = getHeight();
+        int width = getWidth();
+        int size = Math.min(width, height);
+
         mBorderRect.set(0, 0, size, size);
         mBorderRadius = Math.min((mBorderRect.width() - mBorderWidth) / 2, (mBorderRect.height() - mBorderWidth) / 2);
         mBitmapRect.set(mBorderRect);
@@ -336,6 +376,7 @@ public class CircleImage extends AppCompatImageView {
                 break;
             case MotionEvent.ACTION_CANCEL:
                 startAnimation(alphaAnimation);
+                setAlpha(OPAQUE_ALPHA);
                 return true;
             default:
                 break;

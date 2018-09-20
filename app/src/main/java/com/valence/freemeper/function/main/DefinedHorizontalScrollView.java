@@ -176,7 +176,7 @@ public class DefinedHorizontalScrollView extends HorizontalScrollView {
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
         mMenuWidth = (int) (screenWidth * 0.8);
-        mScrollWidth = mMenuWidth / 3;
+        mScrollWidth = mMenuWidth / 4;
 
         // 测试时使用的打印语句
         // Log.e("width", mMenuWidth + "");
@@ -376,14 +376,14 @@ public class DefinedHorizontalScrollView extends HorizontalScrollView {
             if (move.getCoo_x() > down.getCoo_x()) { //这种情况下，整个滑动过程均有效，且有效点为：down,up
                 // 长度有效, 从左往右滑动, 那么 up.x > down.x, 所以是 up - down
 
-                // 这里是滑动长度为屏幕的百分之80以上(即菜单宽度), 那么不管什么情况都打关闭
+                // 这里是滑动长度为屏幕的百分之80以上(即菜单宽度), 那么不管什么情况都打开/关闭
                 if ((up.getCoo_x() - down.getCoo_x()) >= mMenuWidth) {
                     return true;
                 }
                 if ((up.getCoo_x() - down.getCoo_x()) >= condition) {
                     // 滑动角度有效
                     // 符合打开条件
-                    return angleFit(down, up) || (up.getCoo_x() - down.getCoo_x()) >= (condition * 3) && (angleFitMax(down, up));
+                    return angleFit(down, up) || (up.getCoo_x() - down.getCoo_x()) >= (mMenuWidth) && (angleFitMax(down, up));
                 } else {//长度不合适，此时为另一种快速滑动短距离打开方式
                     // 角度有效
                     // 速度有效
@@ -394,7 +394,7 @@ public class DefinedHorizontalScrollView extends HorizontalScrollView {
                 if ((up.getCoo_x() - move.getCoo_x()) >= condition) {
                     // 滑动角度有效
                     // 符合打开条件
-                    return angleFit(move, up) || (up.getCoo_x() - move.getCoo_x()) >= (condition * 3) && (angleFitMax(move, up));
+                    return angleFit(move, up) || (up.getCoo_x() - move.getCoo_x()) >= (mMenuWidth) && (angleFitMax(move, up));
                 } else {//长度不合适，此时为另一种快速滑动短距离打开方式
                     // 角度有效
                     // 速度有效
@@ -413,7 +413,7 @@ public class DefinedHorizontalScrollView extends HorizontalScrollView {
                 if ((down.getCoo_x() - up.getCoo_x()) >= condition) {
                     // 滑动角度有效
                     // 符合关闭条件
-                    return !angleFit(down, up) && ((up.getCoo_x() - down.getCoo_x()) < (condition * 3) || (!angleFitMax(down, up)));
+                    return !angleFit(down, up) && ((up.getCoo_x() - down.getCoo_x()) < (mMenuWidth) || (!angleFitMax(down, up)));
                 } else {//长度不合适，此时为另一种快速滑动短距离打开方式
                     // 角度有效
                     // 速度有效
@@ -424,7 +424,7 @@ public class DefinedHorizontalScrollView extends HorizontalScrollView {
                 if ((move.getCoo_x() - up.getCoo_x()) >= condition) {
                     // 滑动角度有效
                     // 符合关闭条件
-                    return !angleFit(move, up) && ((up.getCoo_x() - move.getCoo_x()) < (condition * 3) || (!angleFitMax(move, up)));
+                    return !angleFit(move, up) && ((up.getCoo_x() - move.getCoo_x()) < (mMenuWidth) || (!angleFitMax(move, up)));
                 } else {//长度不合适，此时为另一种快速滑动短距离打开方式
                     // 角度有效
                     // 速度有效
@@ -525,7 +525,7 @@ public class DefinedHorizontalScrollView extends HorizontalScrollView {
      */
     public boolean angleFit(ViewPoint start, ViewPoint end) {
         double angle = Math.abs(1.0 * (start.getCoo_y() - end.getCoo_y()) / getDistance(start, end));
-        return (angle <= VariableSet.SIN_TWENTY);
+        return (angle <= VariableSet.SIN_THIRTY);
     }
 
     /**
