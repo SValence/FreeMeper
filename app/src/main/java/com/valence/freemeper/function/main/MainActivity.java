@@ -26,6 +26,7 @@ import com.valence.freemeper.base.IFindView;
 import com.valence.freemeper.cusview.ImageTextGroup;
 import com.valence.freemeper.function.about.AboutActivity;
 import com.valence.freemeper.function.album.AlbumActivity;
+import com.valence.freemeper.function.camera.ActivityCamera;
 import com.valence.freemeper.function.video.VideoListActivity;
 import com.valence.freemeper.tool.CommonMethod;
 
@@ -109,8 +110,8 @@ public class MainActivity extends BaseActivity implements IFindView, View.OnClic
         });
         text.setOnClickListener(this);
         camera.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, Main3Activity.class);
-//            startActivity(intent);
+            Intent intent = new Intent(MainActivity.this, ActivityCamera.class);
+            startActivity(intent);
         });
         about.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AboutActivity.class);

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    tools:context=".function.camera.ActivityCamera">
+
+    <TextureView
+        android:id="@+id/free_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="end"
+        android:background="@color/transparent"
+        android:onClick="showResolutionList"
+        android:text="查看镜头支持分辨率"
+        android:textColor="@color/green"
+        android:textSize="18sp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="60dp"
+        android:background="@color/transparent"
+        android:onClick="showPictureList"
+        android:text="查看照片支持分辨率"
+        android:textColor="@color/green"
+        android:textSize="18sp" />
+
+</FrameLayout>

@@ -1,5 +1,6 @@
 package com.valence.freemeper.welcome;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,7 +28,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
     private final String[] permissions = {
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA};
     private final int PMS_LENGTH = permissions.length;
     private int countTime;
     private boolean isSkip;
@@ -130,7 +132,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     granted++;
                 }
             }
-            if (granted == 2) {
+            if (granted == PMS_LENGTH) {
                 // CommonMethod.makeShortToast(mToast, "checkRunTimePermission Run!");
                 countHandler.postDelayed(countTimeRun, VariableSet.JUMP_DELAY_TIME);
             }
