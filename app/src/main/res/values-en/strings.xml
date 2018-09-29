@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">FreeMeper</string>
-    <string name="main_tip">MainPager</string>
     <string name="free_appName_EN">FreeMeper</string>
     <string name="free_appName_CN">多媒体管理</string>
     <string name="free_welcome_allRights">©2017, Valence.Soft. All Rights Reserved</string>
@@ -28,7 +27,11 @@
     <string name="free_upgrade">Check For Update</string>
     <string name="free_video_num">videos</string>
     <string name="video">Video</string>
-    <string name="has_select_list">已选择: %1$d 个列表</string>
+    <string name="has_select_list">%1$d list selected</string>
     <string name="rename">Rename</string>
-    <string name="loading">正在加载, 请稍候...</string>
+    <string name="loading">Loading, please wait...</string>
+    <string name="reGranted">Re-Granted</string>
+    <string name="continue_run">Continue running</string>
+    <string name="permissions_half_baked">Permissions are half-baked, it will Re-Granted when next starting</string>
+    <string name="permission_tip">Runtime permissions are half-baked, continue running software may cause some functional exceptions, sure to continue?</string>
 </resources>

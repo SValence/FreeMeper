@@ -14,6 +14,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -66,9 +67,9 @@ public class ActivityCamera extends AppCompatActivity {
     }
 
     private ImageReader imageReader;
-    private Size previewSize;
+    private Size previewSize = null;
 
-    private void openCamera(int resolutionIdx) {
+    private void openCamera(@Nullable Size size) {
         CameraManager manager = (CameraManager) getSystemService(CAMERA_SERVICE);
         if (manager == null) {
             Log.e(TAG, "Get CameraManager Failed");
@@ -110,7 +111,8 @@ public class ActivityCamera extends AppCompatActivity {
             }, null);
             // 获取最佳的预览尺寸
             cameraSTList = new ArrayList<>(Arrays.asList(map.getOutputSizes(SurfaceTexture.class)));
-            previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), largest);
+            previewSize = size == null ? chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), largest) : size;
+            reSizeCameraWindow(previewSize);
             manager.openCamera(cameraId, stateCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -204,7 +206,7 @@ public class ActivityCamera extends AppCompatActivity {
 
 
     private void preOrOpenCamera() {
-        if (textureView.isAvailable()) openCamera(-1);
+        if (textureView.isAvailable()) openCamera(previewSize);
         else textureView.setSurfaceTextureListener(textureListener);
     }
 
@@ -214,7 +216,7 @@ public class ActivityCamera extends AppCompatActivity {
             Log.e(TAG, "onSurfaceTextureAvailable----height:" + height + ";width:" + width);
 //            ActivityCamera.this.height = height;
 //            ActivityCamera.this.width = width;
-            openCamera(-1);
+            openCamera(previewSize);
         }
 
         @Override
@@ -248,11 +250,10 @@ public class ActivityCamera extends AppCompatActivity {
             }
         }
         if (suitSizeArray.size() > 0) {
-            result = Collections.min(suitSizeArray, new CompareSizesByArea());
+            result = Collections.max(suitSizeArray, new CompareSizesByArea());
         } else {
             result = choices[0];
         }
-        reSizeCameraWindow(result);
         return result;
 
 //        // 收集摄像头支持的大过预览Surface的分辨率
@@ -288,12 +289,12 @@ public class ActivityCamera extends AppCompatActivity {
         // 所以, 这里以宽度为标准
         ViewGroup.LayoutParams params = textureView.getLayoutParams();
         int heightP;
-        int widthP = textureView.getWidth();
+        int widthP = textureView.getHeight();
         // 先以宽度为标准, 如果当前View的宽度大于屏幕宽度, 把View的宽度设置为屏幕宽度, 确保View在屏幕内
         // 否则以当前View的宽度为准
         if (widthP > screenWidth) widthP = screenWidth;
         // 以size的比例计算出View的实际高度
-        heightP = size.getHeight() * widthP / size.getWidth();
+        heightP = size.getWidth() * widthP / size.getHeight();
         // 如果这时计算出的View本来应该有的高度大于屏幕的高度, 那么把View的高度设置为屏幕的高度, 进一步确保View在屏幕内
         // 这时就是以高度为标准, 重新计算宽度
         // 否则直接更新设置View的宽高
@@ -301,8 +302,8 @@ public class ActivityCamera extends AppCompatActivity {
             heightP = screenHeight;
             widthP = size.getWidth() * heightP / size.getHeight();
         }
-        params.height = heightP;
-        params.width = widthP;
+        params.height = heightP;// 实际上是Size的宽度
+        params.width = widthP;  // 实际上是Size的高度
         textureView.setLayoutParams(params);
     }
 
@@ -315,7 +316,8 @@ public class ActivityCamera extends AppCompatActivity {
             list[i] = cameraSTList.get(i).toString();
         }
         dialog.setItems(list, (dialog1, which) -> {
-
+            closeCamera();
+            openCamera(cameraSTList.get(which));
         });
         dialog.show();
     }

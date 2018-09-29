@@ -30,4 +30,8 @@
     <string name="has_select_list">已选择: %1$d 项</string>
     <string name="rename">重命名</string>
     <string name="loading">正在加载, 请稍候...</string>
+    <string name="reGranted">重新授权</string>
+    <string name="continue_run">继续运行</string>
+    <string name="permissions_half_baked">权限的授权不完整, 下次启动时将重新授权</string>
+    <string name="permission_tip">运行时权限不完整, 继续运行软件可能会造成部分功能异常, 要继续运行吗?</string>
 </resources>

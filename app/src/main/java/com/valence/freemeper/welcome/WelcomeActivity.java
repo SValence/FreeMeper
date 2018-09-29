@@ -10,13 +10,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 import com.valence.freemeper.R;
 import com.valence.freemeper.function.main.MainActivity;
+import com.valence.freemeper.tool.CommonMethod;
 import com.valence.freemeper.tool.VariableSet;
 
 /**
@@ -126,16 +126,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         int granted = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (int i = 0; i < PMS_LENGTH; i++) {
-                if (ContextCompat.checkSelfPermission(this, permissions[i]) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, permissions[i]) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(WelcomeActivity.this, permissions, VariableSet.PERMISSION_GRANTED);
-                } else {
-                    granted++;
+                    return;
                 }
             }
-            if (granted == PMS_LENGTH) {
-                // CommonMethod.makeShortToast(mToast, "checkRunTimePermission Run!");
-                countHandler.postDelayed(countTimeRun, VariableSet.JUMP_DELAY_TIME);
-            }
+            // 执行到这里说明所有权限都有直接开始倒计时
+            countHandler.postDelayed(countTimeRun, VariableSet.JUMP_DELAY_TIME);
         } else countHandler.postDelayed(countTimeRun, VariableSet.JUMP_DELAY_TIME);
     }
 
@@ -148,13 +145,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         if (requestCode == 1) {
             for (int result : grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
-                    new AlertDialog.Builder(WelcomeActivity.this).setTitle("Check Permission Result")
-                            // 设置对话框标题
-                            .setMessage("GET PERMISSION ERROR! APP WILL EXIT!")
-                            .setPositiveButton("EXIT", (dialog, which) -> {
-                                // 确定按钮的响应事件
-                                WelcomeActivity.this.finish();
-                            }).show();
+                    new AlertDialog.Builder(this).setMessage(R.string.permission_tip)
+                            .setPositiveButton(R.string.continue_run, (dialog, which) -> {
+                                CommonMethod.makeSingleToast(this, getString(R.string.permissions_half_baked));
+                                countHandler.postDelayed(countTimeRun, VariableSet.JUMP_DELAY_TIME);
+                            })
+                            .setNegativeButton(R.string.reGranted, (dialog, which) -> checkRunTimePermission())
+                            .show();
                     return;
                 }
             }
