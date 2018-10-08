@@ -9,7 +9,10 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
 import android.os.Bundle;
@@ -17,10 +20,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
+import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -29,25 +32,37 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.valence.freemeper.R;
+import com.valence.freemeper.base.BaseActivity;
 import com.valence.freemeper.tool.AppContext;
+import com.valence.freemeper.tool.CommonMethod;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ActivityCamera extends AppCompatActivity {
+public class ActivityCamera extends BaseActivity {
 
     private static final String TAG = "ActivityCamera";
 
     //    private int height = 0, width = 0;
     private TextureView textureView;
     private CameraCaptureSession mPreviewSession;
-    private CaptureRequest.Builder mCaptureRequestBuilder, captureRequestBuilder;
+    private CaptureRequest.Builder mCaptureRequestBuilder, takePictureBuilder;
     private CaptureRequest mCaptureRequest;
     private ArrayList<Size> cameraSTList;
     private ArrayList<Size> pictureSizeList;
     private int screenWidth, screenHeight;
+    private CameraManager manager;
+    private int cameraID;
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +71,9 @@ public class ActivityCamera extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_camera);
 
+        manager = (CameraManager) getSystemService(CAMERA_SERVICE);
         textureView = findViewById(R.id.free_camera);
+        textureView.setOpaque(true);
         textureView.setSurfaceTextureListener(textureListener);
         cameraSTList = new ArrayList<>();
         pictureSizeList = new ArrayList<>();
@@ -64,13 +81,13 @@ public class ActivityCamera extends AppCompatActivity {
         DisplayMetrics dm = getResources().getDisplayMetrics();
         screenHeight = dm.heightPixels;
         screenWidth = dm.widthPixels;
+        cameraID = 0;
     }
 
     private ImageReader imageReader;
     private Size previewSize = null;
 
-    private void openCamera(@Nullable Size size) {
-        CameraManager manager = (CameraManager) getSystemService(CAMERA_SERVICE);
+    private void openCamera(@Nullable Size size, int id) {
         if (manager == null) {
             Log.e(TAG, "Get CameraManager Failed");
             return;
@@ -81,7 +98,7 @@ public class ActivityCamera extends AppCompatActivity {
                 Log.e(TAG, "Device Has No Camera");
                 return;
             }
-            String cameraId = "0";
+            String cameraId = id < 0 ? "0" : String.valueOf(id);
             CameraCharacteristics chara = manager.getCameraCharacteristics(cameraId);
             // 获取摄像头支持的配置属性
             StreamConfigurationMap map = chara.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
@@ -106,9 +123,7 @@ public class ActivityCamera extends AppCompatActivity {
             // 创建一个ImageReader对象，用于获取摄像头的图像数据
             imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, 2);
             // 设置获取图片的监听
-            imageReader.setOnImageAvailableListener(reader -> {
-
-            }, null);
+            imageReader.setOnImageAvailableListener(reader -> CommonMethod.saveImage(imageReader.acquireNextImage()), null);
             // 获取最佳的预览尺寸
             cameraSTList = new ArrayList<>(Arrays.asList(map.getOutputSizes(SurfaceTexture.class)));
             previewSize = size == null ? chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), largest) : size;
@@ -136,12 +151,40 @@ public class ActivityCamera extends AppCompatActivity {
         @Override
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             closeCamera();
+            ActivityCamera.this.cameraDevice = null;
         }
 
         // 打开摄像头出现错误时触发该方法
         @Override
         public void onError(CameraDevice cameraDevice, int error) {
             cameraDevice.close();
+            ActivityCamera.this.cameraDevice = null;
+        }
+    };
+
+    /**
+     * 监听拍照结果
+     */
+    private CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
+        // 拍照成功
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+            // 重设自动对焦模式
+            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+            // 设置自动曝光模式
+            mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            try {
+                //重新进行预览
+                mPreviewSession.setRepeatingRequest(mCaptureRequest, null, null);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        @Override
+        public void onCaptureFailed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureFailure failure) {
+            super.onCaptureFailed(session, request, failure);
         }
     };
 
@@ -167,7 +210,7 @@ public class ActivityCamera extends AppCompatActivity {
                         mCaptureRequest = mCaptureRequestBuilder.build();
                         mPreviewSession = session;
                         //设置反复捕获数据的请求，这样预览界面就会一直有数据显示
-                        mPreviewSession.setRepeatingRequest(mCaptureRequest, null, null);
+                        mPreviewSession.setRepeatingRequest(mCaptureRequest, captureCallback, null);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -206,7 +249,7 @@ public class ActivityCamera extends AppCompatActivity {
 
 
     private void preOrOpenCamera() {
-        if (textureView.isAvailable()) openCamera(previewSize);
+        if (textureView.isAvailable()) openCamera(previewSize, cameraID);
         else textureView.setSurfaceTextureListener(textureListener);
     }
 
@@ -216,7 +259,7 @@ public class ActivityCamera extends AppCompatActivity {
             Log.e(TAG, "onSurfaceTextureAvailable----height:" + height + ";width:" + width);
 //            ActivityCamera.this.height = height;
 //            ActivityCamera.this.width = width;
-            openCamera(previewSize);
+            openCamera(previewSize, cameraID);
         }
 
         @Override
@@ -317,8 +360,9 @@ public class ActivityCamera extends AppCompatActivity {
         }
         dialog.setItems(list, (dialog1, which) -> {
             closeCamera();
-            openCamera(cameraSTList.get(which));
+            openCamera(cameraSTList.get(which), cameraID);
         });
+        dialog.setCancelable(true);
         dialog.show();
     }
 
@@ -331,6 +375,69 @@ public class ActivityCamera extends AppCompatActivity {
             list[i] = pictureSizeList.get(i).toString();
         }
         dialog.setItems(list, null);
+        dialog.setCancelable(true);
         dialog.show();
+    }
+
+    public void onSwitchCamera(View view) {
+        if (manager == null) {
+            Log.e(TAG, "Get CameraManager Failed");
+            return;
+        }
+        try {
+            int count = manager.getCameraIdList().length;
+            if (count == 0) {
+                Log.e(TAG, "Device Has No Camera");
+            } else if (count == 1) {
+                AppContext.showToast(getString(R.string.device_one_camera));
+            } else {
+                view.setClickable(false);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setTitle(R.string.choose_camera);
+                CharSequence[] list = new CharSequence[count];
+                list[0] = getString(R.string.back_camera);
+                list[1] = getString(R.string.front_camera);
+                for (int i = 2; i < list.length; i++) {
+                    list[i] = pictureSizeList.get(i).toString();
+                }
+                dialog.setItems(list, (dialog1, which) -> {
+                    cameraID = which;
+                    closeCamera();
+                    openCamera(null, cameraID);
+                });
+                dialog.setCancelable(true);
+                dialog.setOnDismissListener(dialog1 -> view.setClickable(true));
+                dialog.show();
+            }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onTakePicture(View view) {
+        try {
+            if (cameraDevice == null) {
+                return;
+            }
+            // 创建拍照请求
+            takePictureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            // 设置自动对焦模式
+            takePictureBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            // 将imageReader的surface设为目标
+            takePictureBuilder.addTarget(imageReader.getSurface());
+            // 获取设备方向
+            int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            // 根据设备方向计算设置照片的方向
+            takePictureBuilder.set(CaptureRequest.JPEG_ORIENTATION
+                    , ORIENTATIONS.get(rotation));
+            // 停止连续取景
+            mPreviewSession.stopRepeating();
+            //拍照
+            CaptureRequest captureRequest = takePictureBuilder.build();
+            //设置拍照监听
+            mPreviewSession.capture(captureRequest, captureCallback, null);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
 }

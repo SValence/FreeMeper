@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/deepGray">
-    <item>
+    <item android:id="@android:id/mask">
+        <!-- 如果是 View 是存放图片控件, 那么 item 标签下需要增加 android:id="@android:id/mask" -->
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
-            <solid android:color="@color/defaultThemeBackColor" />
+            <!-- 这里 solid 标签的 color 一定不能为透明"#00000000", 否则 点击没有效果 -->
+            <solid android:color="@color/colorAccent" />
             <corners android:radius="1000dp" />
             <stroke
                 android:width="0dp"

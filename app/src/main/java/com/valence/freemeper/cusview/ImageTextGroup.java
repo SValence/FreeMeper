@@ -16,13 +16,10 @@ import android.widget.TextView;
 
 import com.valence.freemeper.R;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.valence.freemeper.tool.CommonMethod.dip2px;
 import static com.valence.freemeper.tool.CommonMethod.isMarginValid;
 import static com.valence.freemeper.tool.CommonMethod.px2dip;
 import static com.valence.freemeper.tool.VariableSet.DEFAULT_COLOR;
-import static com.valence.freemeper.tool.VariableSet.DEFAULT_SIZE_DIFF;
 import static com.valence.freemeper.tool.VariableSet.DEFAULT_WIDTH;
 import static com.valence.freemeper.tool.VariableSet.GRAVITY_BOTTOM;
 import static com.valence.freemeper.tool.VariableSet.GRAVITY_CENTER;

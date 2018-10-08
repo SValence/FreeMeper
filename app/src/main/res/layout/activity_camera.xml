@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
+    android:background="@color/black"
     tools:context=".function.camera.ActivityCamera">
 
     <TextureView
@@ -33,5 +34,25 @@
         android:text="查看照片支持分辨率"
         android:textColor="@color/green"
         android:textSize="18sp" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="top|start"
+        android:contentDescription="@string/app_name"
+        android:onClick="onSwitchCamera"
+        android:padding="5dp"
+        android:scaleType="centerInside"
+        android:src="@mipmap/free_switch_camera" />
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|center"
+        android:background="@drawable/bg_free_take_picture"
+        android:contentDescription="@string/app_name"
+        android:onClick="onTakePicture"
+        android:padding="5dp"
+        android:scaleType="centerInside" />
 
 </FrameLayout>

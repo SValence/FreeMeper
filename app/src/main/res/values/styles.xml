@@ -21,13 +21,13 @@
         <item name="android:layout_height">0sp</item>
     </style>
 
-    <style name="MainContainerIV">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:background">@drawable/bg_free_ripple_component</item>
-        <item name="android:clickable">true</item>
-    </style>
+    <!--<style name="MainContainerIV">-->
+        <!--<item name="android:layout_width">wrap_content</item>-->
+        <!--<item name="android:layout_height">wrap_content</item>-->
+        <!--<item name="android:layout_gravity">center</item>-->
+        <!--<item name="android:background">@drawable/bg_free_ripple_component</item>-->
+        <!--<item name="android:clickable">true</item>-->
+    <!--</style>-->
 
     <style name="MainContainerText">
         <item name="android:layout_width">match_parent</item>
@@ -61,7 +61,7 @@
         <item name="group_bw">1dp</item>
         <item name="group_clickable">true</item>
         <item name="group_ellipsize">END</item>
-        <item name="group_fg">@drawable/fg_valence_ripple_component</item>
+        <item name="group_fg">@drawable/fg_free_ripple_component</item>
         <item name="group_img_gv">center</item>
         <item name="group_img_margin">10dp</item>
         <item name="group_img_size">200</item>
@@ -78,7 +78,7 @@
         <item name="group_bw">1dp</item>
         <item name="group_clickable">true</item>
         <item name="group_ellipsize">END</item>
-        <item name="group_fg">@drawable/fg_valence_ripple_component</item>
+        <item name="group_fg">@drawable/fg_free_ripple_component</item>
         <item name="group_img_gv">center</item>
         <item name="group_img_margin">10dp</item>
         <item name="group_img_size">match_parent</item>

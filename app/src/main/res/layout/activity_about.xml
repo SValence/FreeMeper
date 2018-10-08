@@ -35,7 +35,7 @@
                 android:id="@+id/about_device_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_free_ripple_white"
+                android:background="@drawable/bg_free_ripple_normal"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -70,7 +70,7 @@
                 android:id="@+id/about_model"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_free_ripple_white"
+                android:background="@drawable/bg_free_ripple_normal"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -105,7 +105,7 @@
                 android:id="@+id/about_hardVer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_free_ripple_white"
+                android:background="@drawable/bg_free_ripple_normal"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -140,7 +140,7 @@
                 android:id="@+id/about_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_free_ripple_white"
+                android:background="@drawable/bg_free_ripple_normal"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -176,7 +176,7 @@
                 android:id="@+id/about_update"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_free_ripple_white"
+                android:background="@drawable/bg_free_ripple_normal"
                 android:clickable="true"
                 android:focusable="true">
 

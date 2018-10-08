@@ -8,6 +8,7 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -22,11 +23,20 @@ import com.valence.freemeper.cusview.MarginBean;
 import com.valence.freemeper.database.DatabaseHelper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -73,18 +83,10 @@ public class CommonMethod {
      *            文件路径
      */
     public static String getDirPathOfFile(String filePath) {
-        String dirPath = null;
-        int index = 0;
-        if (filePath.equals("") || filePath.length() == 0)
+        if (TextUtils.isEmpty(filePath))
             return null;
-        for (int i = filePath.length() - 1; i >= 0; i--) {
-            if (filePath.charAt(i) == '/') {
-                index = i;
-                break;
-            }
-        }
-        dirPath = filePath.substring(0, index);
-        return dirPath;
+        File file = new File(filePath);
+        return file.exists() ? file.getParent() : null;
     }
 
     /******************************************************************************
@@ -247,13 +249,13 @@ public class CommonMethod {
     public static int getStatusHeight(Context context) {
 
         int statusHeight = -1;
-        try{
+        try {
             Class clazz = Class.forName("com.android.internal.R$dimen");
             Object object = clazz.newInstance();
             int height = Integer.parseInt(clazz.getField("status_bar_height")
                     .get(object).toString());
             statusHeight = context.getResources().getDimensionPixelSize(height);
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return statusHeight;
@@ -274,7 +276,7 @@ public class CommonMethod {
         image.setLayoutParams(param);
     }
 
-    public static  boolean isMarginValid(MarginBean marginBean, int image_size) {
+    public static boolean isMarginValid(MarginBean marginBean, int image_size) {
         int image_margin = marginBean.getMargin();
         if (image_margin == 0) {
             if (image_size <= marginBean.getTop() + marginBean.getBottom() || image_size <= marginBean.getLeft() + marginBean.getRight()) {
@@ -288,5 +290,45 @@ public class CommonMethod {
             }
         }
         return true;
+    }
+
+    private static int picture_num = 0;
+
+    public static void saveImage(Image image) {
+        if (image == null) return;
+        Completable.fromAction(() -> {
+            ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+            String name = AppContext.getSavedFilePicture()
+                    + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss", Locale.CHINA).format(new Date())
+                    + "_" + picture_num + ".jpg";
+            picture_num++;
+            File file = new File(name);
+            if (!file.exists() && !file.mkdir())
+                throw new FileNotFoundException("Can not make file:" + name);
+            FileOutputStream output = new FileOutputStream(file);
+            output.write(bytes);
+            output.close();
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        image.close();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.toString());
+                        image.close();
+                    }
+                });
     }
 }

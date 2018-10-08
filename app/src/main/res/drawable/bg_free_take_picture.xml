@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:drawable="@drawable/free_take_pic_press" android:shape="rectangle">
+            <corners android:radius="1dp" />
+            <padding android:bottom="1dp" android:left="1dp" android:right="1dp" android:top="1dp" />
+            <solid android:color="@color/transparent" />
+            <stroke android:width="0dp" android:color="@color/defaultThemeColor" />
+        </shape>
+    </item>
+
+    <item android:drawable="@drawable/free_take_pic_press" android:state_selected="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="1dp" />
+            <padding android:bottom="1dp" android:left="1dp" android:right="1dp" android:top="1dp" />
+            <solid android:color="@color/transparent" />
+            <stroke android:width="0dp" android:color="@color/defaultThemeColor" />
+        </shape>
+    </item>
+
+    <item android:drawable="@drawable/free_take_pic_normal">
+        <shape android:shape="rectangle">
+            <corners android:radius="1dp" />
+            <padding android:bottom="1dp" android:left="1dp" android:right="1dp" android:top="1dp" />
+            <solid android:color="@color/transparent" />
+            <stroke android:width="0dp" android:color="@color/defaultThemeColor" />
+        </shape>
+    </item>
+</selector>

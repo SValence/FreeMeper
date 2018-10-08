@@ -34,4 +34,8 @@
     <string name="continue_run">Continue running</string>
     <string name="permissions_half_baked">Permissions are half-baked, it will Re-Granted when next starting</string>
     <string name="permission_tip">Runtime permissions are half-baked, continue running software may cause some functional exceptions, sure to continue?</string>
+    <string name="device_one_camera">This device has only one camera</string>
+    <string name="choose_camera">Choose Camera</string>
+    <string name="back_camera">Back camera</string>
+    <string name="front_camera">Front camera</string>
 </resources>

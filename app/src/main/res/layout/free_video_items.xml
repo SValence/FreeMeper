@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="130dp"
     android:layout_margin="5dp"
-    android:foreground="@drawable/bg_free_ripple_white">
+    android:foreground="@drawable/bg_free_ripple_normal">
 
     <ImageView
         android:id="@+id/free_video_list_items_img"

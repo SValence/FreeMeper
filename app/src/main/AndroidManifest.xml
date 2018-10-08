@@ -58,6 +58,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".function.camera.ActivityCamera"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
     </application>
 
