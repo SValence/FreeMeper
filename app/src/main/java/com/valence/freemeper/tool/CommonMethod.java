@@ -6,11 +6,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Instrumentation;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ImageFormat;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.media.Image;
+import android.media.MediaScannerConnection;
+import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,23 +27,26 @@ import android.widget.Toast;
 import com.valence.freemeper.cusview.CircleImage;
 import com.valence.freemeper.cusview.MarginBean;
 import com.valence.freemeper.database.DatabaseHelper;
+import com.valence.freemeper.function.camera.CameraHelper;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * 共通方法类库
@@ -47,8 +56,6 @@ import io.reactivex.schedulers.Schedulers;
  * @since 2017/09/13
  */
 public class CommonMethod {
-
-    private static final String TAG = "CommonMethod";
 
     public static void makeSingleToast(Context context, String value) {
         Toast.makeText(context, value, Toast.LENGTH_SHORT).show();
@@ -105,12 +112,9 @@ public class CommonMethod {
         new AlertDialog.Builder(ac).setTitle(title)
                 // 设置对话框标题
                 .setMessage(message)
-                .setPositiveButton(buttonMessage, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,
-                                        int which) {
-                        // 确定按钮的响应事件
+                .setPositiveButton(buttonMessage, (dialog, which) -> {
+                    // 确定按钮的响应事件
 
-                    }
                 }).show();
     }
 
@@ -145,7 +149,7 @@ public class CommonMethod {
                     Instrumentation inst = new Instrumentation();
                     inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
                 } catch (Exception e) {
-                    Log.e("SendKeyException", e.toString());
+                    Timber.e(e.toString());
                 }
             }
         }.start();
@@ -175,7 +179,7 @@ public class CommonMethod {
      */
     public static boolean saveBitmap2JPG(Bitmap bt, String path) {
         if (TextUtils.isEmpty(path)) {
-            Log.e(TAG, "File Path is Empty!");
+            Timber.e("File Path is Empty!");
             return false;
         }
         File file = new File(path);
@@ -195,16 +199,17 @@ public class CommonMethod {
     public static void doClearCache(Context context) {
         Single.fromCallable(() -> {
             // 这里删除两次是因为华为Mate10删除时会出现删除文件对应的.hwbk文件, 所以要进行二次删除
+            // 暂时这么处理
             DatabaseHelper.cleanTable(context);
             int ret = deleteFile(AppContext.getThumbDirPhoto());
             if (ret != 0) return ret;
             ret = deleteFile(AppContext.getThumbDirPhoto());
             if (ret != 0) return ret;
-            Log.w(TAG, "Photo Thumb Directory Has Cleaned");
+            Timber.w("Photo Thumb Directory Has Cleaned");
             ret = deleteFile(AppContext.getThumbDirVideo());
-            if (ret == 0) Log.w(TAG, "Video Thumb Directory Has Cleaned");
+            if (ret == 0) Timber.w("Video Thumb Directory Has Cleaned");
             ret = deleteFile(AppContext.getThumbDirVideo());
-            if (ret == 0) Log.w(TAG, "Video Thumb Directory Has Cleaned");
+            if (ret == 0) Timber.w("Video Thumb Directory Has Cleaned");
             return ret;
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(integer -> {
@@ -228,7 +233,7 @@ public class CommonMethod {
             if (fi.isDirectory()) deleteFile(fi.getAbsolutePath());
             else {
                 if (!fi.delete()) {
-                    Log.e(TAG, String.format("Delete File %s Error", fi.getAbsolutePath()));
+                    Timber.e("Delete File %s Error", fi.getAbsolutePath());
                     return 30003;
                 }
             }
@@ -244,6 +249,33 @@ public class CommonMethod {
     public static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
+    }
+
+    public static boolean backupDatabase(SQLiteDatabase database) {
+        if (database == null) return false;
+        String path = database.getPath();
+        File databaseFile = new File(path);
+        if (!databaseFile.exists()) return false;
+        String targetPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/freeMeper.db";
+        File targetFile = new File(targetPath);
+        try {
+            int byteSum = 0;
+            int byteRead;
+            if (targetFile.exists() && !targetFile.delete()) return false;
+            if (!targetFile.createNewFile()) return false;
+            InputStream inStream = new FileInputStream(databaseFile); // 读入原文件
+            FileOutputStream fs = new FileOutputStream(targetFile);
+            byte[] buffer = new byte[1444];
+            while ((byteRead = inStream.read(buffer)) != -1) {
+                byteSum += byteRead; // 字节数 文件大小
+                fs.write(buffer, 0, byteRead);
+            }
+            inStream.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static int getStatusHeight(Context context) {
@@ -280,12 +312,12 @@ public class CommonMethod {
         int image_margin = marginBean.getMargin();
         if (image_margin == 0) {
             if (image_size <= marginBean.getTop() + marginBean.getBottom() || image_size <= marginBean.getLeft() + marginBean.getRight()) {
-                Log.e(TAG, "Margin is invalid");
+                Timber.e("Margin is invalid");
                 return false;
             }
         } else {
             if (image_size <= 2 * image_margin || image_size <= 2 * image_margin) {
-                Log.e(TAG, "Margin is invalid");
+                Timber.e("Margin is invalid");
                 return false;
             }
         }
@@ -294,41 +326,51 @@ public class CommonMethod {
 
     private static int picture_num = 0;
 
-    public static void saveImage(Image image) {
+    public static void saveCameraImage(Image image, MediaScannerConnection scanner, int degree, CameraHelper.OnPicRecCompleteListener listener) {
         if (image == null) return;
-        Completable.fromAction(() -> {
+        Disposable subscribe = Single.fromCallable(() -> {
+            // 1. 获取图片
             ByteBuffer buffer = image.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[buffer.remaining()];
             buffer.get(bytes);
-            String name = AppContext.getSavedFilePicture()
-                    + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss", Locale.CHINA).format(new Date())
-                    + "_" + picture_num + ".jpg";
+            Bitmap temp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            // Timber.e("CameraImage----image,width:%d,height:%d; Bitmap,width:%d,height:%d", image.getWidth(), image.getHeight(), temp.getWidth(), temp.getHeight());
+
+            // 2. 根据需求旋转图片(如果有需要后期可加入前置拍照镜像等操作), 并获取新的 Bitmap
+            Matrix matrix = new Matrix();
+            matrix.setRotate(degree, temp.getWidth() / 2, temp.getHeight() / 2);
+            Bitmap imageBitmap = Bitmap.createBitmap(temp, 0, 0, temp.getWidth(), temp.getHeight(), matrix, true);
+
+            // 3. 保存新的图片
+            String path = AppContext.getNewPicturePath(picture_num);
             picture_num++;
-            File file = new File(name);
-            if (!file.exists() && !file.mkdir())
-                throw new FileNotFoundException("Can not make file:" + name);
-            FileOutputStream output = new FileOutputStream(file);
-            output.write(bytes);
-            output.close();
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+            File file = new File(path);
+            if (!file.exists() && !file.createNewFile())
+                throw new FileNotFoundException("Can not make file:" + path);
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
 
-                    }
+            // 4. 释放资源
+            bos.flush();
+            bos.close();
+            temp.recycle();
+            imageBitmap.recycle();
 
-                    @Override
-                    public void onComplete() {
-                        image.close();
-                    }
+            // 5. 释放 Image
+            image.close();
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, e.toString());
-                        image.close();
-                    }
-                });
+            // 6. 扫描该文件, 否则系统中 Media 数据库 可能没有保存该文件的信息
+            if (TextUtils.isEmpty(path) || scanner == null || !scanner.isConnected())
+                return "";
+            scanner.scanFile(path, null);
+            return path;
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(path -> {
+            if (listener != null)
+                listener.onPicRecComplete(CameraHelper.CAMERA_TYPE_PICTURE, path);
+        }, throwable -> {
+            throwable.printStackTrace();
+            if (listener != null)
+                listener.onPicRecComplete(CameraHelper.CAMERA_TYPE_PICTURE, "");
+        });
     }
 }

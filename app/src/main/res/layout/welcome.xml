@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,21 +19,16 @@
         android:background="@drawable/bg_free_welcome_skip"
         android:gravity="center"
         android:text="@string/free_skip"
-        android:textColor="@color/black"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textColor="@color/black" />
 
     <FrameLayout
         android:id="@+id/free_welcome_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/free_welcome_skip">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:orientation="horizontal">
 
@@ -43,64 +37,46 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/svg_free_welcome" />
+                android:src="@drawable/svg_free_welcome_logo" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="40dp"
-                android:orientation="vertical">
+            <TextView
+                android:id="@+id/free_welcome_app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_marginStart="5sp"
+                android:layout_marginBottom="2sp"
+                android:gravity="bottom"
+                android:textColor="@color/deepGray"
+                android:textSize="24sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="0sp"
-                    android:layout_marginStart="5sp"
-                    android:layout_marginBottom="2sp"
-                    android:layout_weight="1"
-                    android:gravity="bottom"
-                    android:text="@string/free_appName_EN"
-                    android:textColor="@color/deepGray"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="0sp"
-                    android:layout_marginTop="2sp"
-                    android:layout_weight="1"
-                    android:gravity="top"
-                    android:text="@string/free_appName_CN"
-                    android:textColor="@color/deepGray"
-                    android:textSize="24sp" />
-            </LinearLayout>
+            <View style="@style/NULLView" />
         </LinearLayout>
 
         <View style="@style/NULLView" />
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/free_welcome_rights"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20sp"
-        android:gravity="center"
-        android:text="@string/free_welcome_allRights"
-        android:textColor="@color/gray"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/svg_free_logo"
-        app:layout_constraintBottom_toTopOf="@+id/free_welcome_rights"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/free_welcome_title" />
+        <TextView
+            android:id="@+id/free_welcome_rights"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:text="@string/free_welcome_allRights"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
 
-</android.support.constraint.ConstraintLayout>
+        <ImageView
+            android:id="@+id/free_welcome_logo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/free_welcome_rights"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerInside"
+            android:src="@drawable/svg_free_logo" />
+    </RelativeLayout>
+</LinearLayout>

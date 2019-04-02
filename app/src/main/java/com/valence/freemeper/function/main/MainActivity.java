@@ -24,10 +24,12 @@ import com.valence.freemeper.R;
 import com.valence.freemeper.base.BaseActivity;
 import com.valence.freemeper.base.IFindView;
 import com.valence.freemeper.cusview.ImageTextGroup;
+import com.valence.freemeper.database.DatabaseHelper;
 import com.valence.freemeper.function.about.AboutActivity;
 import com.valence.freemeper.function.album.AlbumActivity;
-import com.valence.freemeper.function.camera.ActivityCamera;
+import com.valence.freemeper.function.camera.ActivityCamera2;
 import com.valence.freemeper.function.video.VideoListActivity;
+import com.valence.freemeper.tool.AppContext;
 import com.valence.freemeper.tool.CommonMethod;
 
 /**
@@ -105,12 +107,17 @@ public class MainActivity extends BaseActivity implements IFindView, View.OnClic
             startActivity(intent);
         });
         music.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
-//            startActivity(intent);
+            DatabaseHelper.initDatabase(this);
+            if(CommonMethod.backupDatabase(AppContext.getInstance().db)){
+                AppContext.showToast("备份成功");
+            } else {
+                AppContext.showToast("备份失败");
+            }
+            DatabaseHelper.unInitDatabase();
         });
         text.setOnClickListener(this);
         camera.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ActivityCamera.class);
+            Intent intent = new Intent(MainActivity.this, ActivityCamera2.class);
             startActivity(intent);
         });
         about.setOnClickListener(v -> {

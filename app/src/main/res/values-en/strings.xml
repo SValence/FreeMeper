@@ -38,4 +38,10 @@
     <string name="choose_camera">Choose Camera</string>
     <string name="back_camera">Back camera</string>
     <string name="front_camera">Front camera</string>
+    <string name="getCameraCountError">Get Camera Count Error</string>
+    <string name="support_resolution_null">Camera support Resolution is null</string>
+    <string name="camera_support_resolution">Camera support Resolution</string>
+    <string name="camera_album">CameraAlbum</string>
+    <string name="root_dir">RootDir</string>
+    <string name="latest_version">This is the latest version</string>
 </resources>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_free_rectangle_border"
+        android:padding="5dp">
+
+        <com.valence.freemeper.cusview.ImageCallbackView
+            android:id="@+id/free_camera_files"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:contentDescription="CameraFiles"
+            android:scaleType="centerInside"
+            android:src="@mipmap/free_default_picture" />
+
+        <com.valence.freemeper.cusview.ImageCallbackView
+            android:id="@+id/free_camera_video_sign"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center"
+            android:contentDescription="VideoSign"
+            android:scaleType="centerInside"
+            android:src="@mipmap/free_video_tag"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <com.valence.freemeper.cusview.ImageCallbackView
+        android:id="@+id/free_camera_picture"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:contentDescription="CameraSnap"
+        android:padding="5dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/bg_free_take_picture" />
+
+    <com.valence.freemeper.cusview.ImageCallbackView
+        android:id="@+id/free_camera_start_record"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:background="@drawable/bg_free_ripple_default"
+        android:contentDescription="StartRecord"
+        android:scaleType="centerInside"
+        android:src="@mipmap/free_camera_start_record"
+        android:visibility="gone" />
+
+    <com.valence.freemeper.cusview.ImageCallbackView
+        android:id="@+id/free_camera_stop_record"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:background="@drawable/bg_free_ripple_default"
+        android:contentDescription="StopRecord"
+        android:scaleType="centerInside"
+        android:src="@mipmap/free_camera_stop_record"
+        android:visibility="gone" />
+
+    <com.valence.freemeper.cusview.ImageCallbackView
+        android:id="@+id/free_camera_video"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:contentDescription="RecordMode"
+        android:padding="5dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/bg_free_record" />
+
+    <com.valence.freemeper.cusview.ImageCallbackView
+        android:id="@+id/free_camera_picture_mode"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:background="@drawable/bg_free_ripple_default"
+        android:contentDescription="PictureMode"
+        android:padding="5dp"
+        android:scaleType="centerInside"
+        android:src="@mipmap/free_take_pic_normal"
+        android:visibility="gone" />
+</LinearLayout>

@@ -10,6 +10,7 @@ import android.provider.MediaStore.Images.Thumbnails;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.valence.freemeper.R;
 import com.valence.freemeper.function.images.AlbumImageItem;
 
 import java.io.File;
@@ -140,7 +141,7 @@ public class AlbumHelper extends AsyncTask<Object, Object, Object> {
                         bucket.setBucketCoverPath(thumbPath == null ? path : thumbPath);
                         bucket.setBucketPath(new File(path).getParent());
                         if (TextUtils.equals(bucket.getBucketPath(), Environment.getExternalStorageDirectory().getAbsolutePath()))
-                            bucketName = "根目录";
+                            bucketName = context.getString(R.string.root_dir);
                         bucket.setBucketName(bucketName);
                     }
                     bucket.count++;

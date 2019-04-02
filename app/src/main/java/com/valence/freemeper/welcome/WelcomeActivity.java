@@ -2,6 +2,9 @@ package com.valence.freemeper.welcome;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -13,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.valence.freemeper.R;
 import com.valence.freemeper.function.main.MainActivity;
@@ -29,9 +33,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     private final String[] permissions = {
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.RECORD_AUDIO,
             Manifest.permission.CAMERA};
     private final int PMS_LENGTH = permissions.length;
-    private int countTime;
+    private static int countTime;
+    private boolean paused;
     private boolean isSkip;
 
     private Button skipButton;
@@ -62,13 +68,33 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
     private void initVariable() {
         countTime = VariableSet.NUM_THREE;
+        paused = false;
         isSkip = false;
 
         skipButton = findViewById(R.id.free_welcome_skip);
         skipButton.setText(getString(R.string.free_skip, countTime));
         skipButton.setOnClickListener(this);
 
+        TextView name = findViewById(R.id.free_welcome_app_name);
+        name.setText(String.format("%s\n%s", getString(R.string.free_appName_EN), getString(R.string.free_appName_CN)));
+
         // mToast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
+
+        getLifecycle().addObserver(new LifecycleObserver() {
+            @OnLifecycleEvent(value = Lifecycle.Event.ON_PAUSE)
+            public void onPause() {
+                paused = true;
+                countHandler.removeCallbacks(countTimeRun);
+            }
+
+            @OnLifecycleEvent(value = Lifecycle.Event.ON_RESUME)
+            public void onResume() {
+                if (paused) {
+                    countHandler.postDelayed(countTimeRun, 1000);
+                    paused = false;
+                }
+            }
+        });
     }
 
     private Runnable countTimeRun = new Runnable() {

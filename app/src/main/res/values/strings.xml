@@ -38,4 +38,10 @@
     <string name="choose_camera">选择相机</string>
     <string name="back_camera">后置</string>
     <string name="front_camera">前置</string>
+    <string name="getCameraCountError">获取摄像头数量失败</string>
+    <string name="support_resolution_null">支持分辨率为空</string>
+    <string name="camera_support_resolution">摄像头支持分辨率</string>
+    <string name="camera_album">CameraAlbum</string>
+    <string name="root_dir">根目录</string>
+    <string name="latest_version">已是最新版本</string>
 </resources>

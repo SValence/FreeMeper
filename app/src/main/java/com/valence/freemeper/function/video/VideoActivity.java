@@ -13,7 +13,6 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +23,10 @@ import android.widget.TextView;
 
 import com.valence.freemeper.BuildConfig;
 import com.valence.freemeper.R;
-import com.valence.freemeper.base.BaseActivity;
-import com.valence.freemeper.holder.EmptyViewHolder;
-import com.valence.freemeper.base.IFindView;
-import com.valence.freemeper.holder.BottomToolHolder;
+import com.valence.freemeper.base.BaseActivity2;
 import com.valence.freemeper.database.DatabaseHelper;
+import com.valence.freemeper.holder.BottomToolHolder;
+import com.valence.freemeper.holder.EmptyViewHolder;
 import com.valence.freemeper.tool.AppContext;
 import com.valence.freemeper.tool.CommonMethod;
 import com.valence.freemeper.tool.GlideApp;
@@ -39,8 +37,10 @@ import java.util.ArrayList;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 import static com.valence.freemeper.database.DatabaseHelper.FILE_ID;
@@ -51,9 +51,7 @@ import static com.valence.freemeper.function.video.VideoListActivity.VIDEO_LIST_
 import static com.valence.freemeper.function.video.VideoListActivity.VIDEO_LIST_VIEW_RESPONSE_M;
 import static com.valence.freemeper.function.video.VideoListActivity.VIDEO_LIST_VIEW_RESPONSE_N;
 
-public class VideoActivity extends BaseActivity implements IFindView, View.OnClickListener {
-
-    private static final String TAG = "";
+public class VideoActivity extends BaseActivity2 implements View.OnClickListener {
 
     private TextView headText;
     private ImageView back;
@@ -74,18 +72,26 @@ public class VideoActivity extends BaseActivity implements IFindView, View.OnCli
     public TextView delete;
     private boolean selectMode;
 
+    private CompositeDisposable mComDis = new CompositeDisposable();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
         findView();
-        setVariate();
+        initData();
         setListener();
     }
 
     @Override
-    public void setVariate() {
+    protected void onDestroy() {
+        mComDis.clear();
+        super.onDestroy();
+    }
+
+    @Override
+    public void initData() {
         thumbCreate = false;
         selectMode = false;
         bucket = (VideoBucket) getIntent().getSerializableExtra(VIDEO_LIST_KEY);
@@ -93,7 +99,7 @@ public class VideoActivity extends BaseActivity implements IFindView, View.OnCli
         // 如果index是-1说明有错
         if (bucket == null) {
             videoList = new ArrayList<>();
-            Log.e(TAG, "Video Bucket is Null!");
+            Timber.e("Video Bucket is Null!");
             return;
         }
         videoList = bucket.getVideoList();
@@ -244,9 +250,12 @@ public class VideoActivity extends BaseActivity implements IFindView, View.OnCli
                 VideoHolder holder = (VideoHolder) holder1;
                 VideoItem item = videoList.get(position);
                 if (item == null) return;
-                Log.i(TAG, "pos:" + position + "----VideoPath:" + item.getVideoPath() + "----ThumbnailPath:" + item.getThumbnailPath());
+                Timber.i("pos:" + position + "----VideoPath:" + item.getVideoPath() + "----ThumbnailPath:" + item.getThumbnailPath());
                 if (TextUtils.isEmpty(item.getThumbnailPath())) {
-                    if (holder.disposable != null) holder.disposable.dispose();
+                    if (holder.disposable != null) {
+                        mComDis.remove(holder.disposable);
+                        holder.disposable.dispose();
+                    }
                     holder.disposable = Single.fromCallable(() -> {
                         thumbCreate = true;
                         Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(item.getVideoPath(), MINI_KIND);
@@ -268,11 +277,12 @@ public class VideoActivity extends BaseActivity implements IFindView, View.OnCli
                                 holder.videoPreview.setImageBitmap(bitmap);
                                 holder.videoPreview.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             }, throwable -> {
-                                Log.e(TAG, "Get Video BitMap Error");
+                                Timber.e("Get Video BitMap Error");
                                 throwable.printStackTrace();
                                 holder.videoPreview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                                 holder.videoPreview.setImageResource(R.mipmap.free_pic_error);
                             });
+                    mComDis.add(holder.disposable);
                 } else {
                     holder.videoPreview.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     GlideApp.with(VideoActivity.this)
@@ -298,7 +308,7 @@ public class VideoActivity extends BaseActivity implements IFindView, View.OnCli
             } else {
                 // 什么也不做
                 // TODO...
-                Log.e(TAG, "Holder Type Error!");
+                Timber.e("Holder Type Error!");
             }
         }
 

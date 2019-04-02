@@ -2,6 +2,7 @@ package com.valence.freemeper.function.video;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,8 +10,8 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.valence.freemeper.R;
 import com.valence.freemeper.database.DatabaseHelper;
 import com.valence.freemeper.tool.AppContext;
 import com.valence.freemeper.tool.CommonMethod;
@@ -21,19 +22,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import timber.log.Timber;
+
 import static com.valence.freemeper.database.DatabaseHelper.FILE_ID;
+import static com.valence.freemeper.database.DatabaseHelper.FILE_PATH;
 import static com.valence.freemeper.database.DatabaseHelper.FILE_THUMB_PATH;
 import static com.valence.freemeper.database.DatabaseHelper.THUMB_TABLE;
 
 public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
-
-    private static final String TAG = "LocalVideoHelper";
 
     @SuppressLint("StaticFieldLeak")
     private Context context;
     private HashMap<String, VideoBucket> bucketList = new HashMap<>();
     private HashMap<String, String> thumbnailList = new HashMap<>();
     private final HashMap<String, String> thumbDatabase = new HashMap<>();
+    private final ArrayList<ContentValues> thumbNeedInsertDatabase = new ArrayList<>();
     private boolean hasBuildVideoBucketList = false;
     private ContentResolver contentResolver;
     private LoadVideoList listLoader;
@@ -94,7 +97,7 @@ public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
         Cursor cur = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, columns, null, null,
                 MediaStore.Video.Media.DATE_MODIFIED + " desc");
         if (cur == null) {
-            Log.e(TAG, "Query Video List Error! —— cursor is null!");
+            Timber.e("Query Video List Error! —— cursor is null!");
             return;
         }
         if (cur.moveToFirst()) {
@@ -116,10 +119,8 @@ public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
                         cur.getString(videoPathIndex).lastIndexOf("/") + 1,
                         cur.getString(videoPathIndex).lastIndexOf("."))
                         .replaceAll(" ", "").length() <= 0) {
-                    Log.e(TAG, "出现了异常图片的地址：cur.getString(videoPathIndex)="
-                            + cur.getString(videoPathIndex));
-                    Log.e(TAG, "出现了异常图片的地址：cur.getString(videoPathIndex).substring="
-                            + cur.getString(videoPathIndex).substring(
+                    Timber.e("出现了异常图片的地址：cur.getString(videoPathIndex)=%s", cur.getString(videoPathIndex));
+                    Timber.e("出现了异常图片的地址：cur.getString(videoPathIndex).substring=%s", cur.getString(videoPathIndex).substring(
                             cur.getString(videoPathIndex).lastIndexOf("/") + 1,
                             cur.getString(videoPathIndex).lastIndexOf(".")));
                     continue;
@@ -133,7 +134,7 @@ public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
 
                 File file = new File(path);
                 if (!file.exists()) {
-                    Log.e(TAG, "VIDEO FILE NOT EXIST: " + path);
+                    Timber.e("VIDEO FILE NOT EXIST: %s", path);
                     continue;
                 }
 
@@ -145,28 +146,42 @@ public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
                         dataThread.join();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                    } finally {
+                        dataThread = null;
                     }
                 }
-                if (!thumbDatabase.isEmpty()) {
-                    // 存在没有缩略图的文件
-                    for (Map.Entry<String, BucketVideoNum> entry : noList.entrySet()) {
-                        String _id = entry.getKey();
-                        BucketVideoNum bv = entry.getValue();
-                        String thumb = thumbDatabase.get(_id);
-                        VideoBucket bucket = bv.bucket;
-                        int index = bv.videoIndex;
-                        if (thumb != null) {
-                            File f = new File(thumb);
-                            // 如果这个缩略图文件不存在, 直接跳过该文件
-                            if (!f.exists()) {
-                                Log.e(TAG, "Thumb File is Not Exist!——" + thumb);
-                                continue;
-                            }
-                            bucket.videoList.get(index).setThumbnailPath(thumb);
-                            bucketList.put(bucket.getBucketId(), bucket);
+                // 数据库中存在系统没保存缩略图的文件缩略图文件信息, 去加载这些信息
+                for (Map.Entry<String, BucketVideoNum> entry : noList.entrySet()) {
+                    String _id = entry.getKey();
+                    BucketVideoNum bv = entry.getValue();
+                    String thumb = thumbDatabase.get(_id);
+                    VideoBucket bucket = bv.bucket;
+                    int index = bv.videoIndex;
+
+                    String thumbPath = AppContext.getThumbDirVideo() + bucket.videoList.get(index).getVideoName() + AppContext.THUMB_FILE_END;
+                    File thumbFile = new File(thumbPath);
+                    if (thumb == null && thumbFile.exists()) {
+                        // 数据库中没有这个视频的缩略图信息, 但是视频的缩略图文件存在,
+                        String videoPath = bucket.videoList.get(index).getVideoPath();
+                        ContentValues c = new ContentValues();
+                        c.put(FILE_ID, _id);
+                        c.put(FILE_PATH, videoPath);
+                        c.put(FILE_THUMB_PATH, thumbPath);
+                        thumbNeedInsertDatabase.add(c);
+                        bucket.videoList.get(index).setThumbnailPath(thumbPath);
+                        // 不需要重新put, 上一步代码已经修改了其内部对象的值
+                        // bucketList.put(bucket.getBucketId(), bucket);
+                    } else if (thumb != null) {
+                        File f = new File(thumb);
+                        // 如果这个缩略图文件不存在, 直接跳过该文件（可能被手动删除了）
+                        if (!f.exists()) {
+                            Timber.e("Thumb File is Not Exist!——%s", thumb);
+                            continue;
                         }
+                        bucket.videoList.get(index).setThumbnailPath(thumb);
                     }
                 }
+                insertThumbDatabase();
             }
         }
         cur.close();
@@ -181,12 +196,15 @@ public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
                 String sql = "SELECT * FROM " + THUMB_TABLE;
                 Cursor cursor = DatabaseHelper.query(db, sql);
                 if (cursor == null || !cursor.moveToFirst()) {
-                    Log.e(TAG, "QUERY DATABASE ERROR: " + sql);
+                    Timber.e("QUERY DATABASE ERROR: %s", sql);
                     dataThread.interrupt();
+                    DatabaseHelper.unInitDatabase();
                     return;
                 }
                 synchronized (thumbDatabase) {
                     do {
+                        String filePath = cursor.getString(cursor.getColumnIndex(FILE_PATH));
+                        if (!new File(filePath).exists()) continue;
                         String thumbPath = cursor.getString(cursor.getColumnIndex(FILE_THUMB_PATH));
                         String id = cursor.getString(cursor.getColumnIndex(FILE_ID));
                         thumbDatabase.put(id, thumbPath);
@@ -213,7 +231,7 @@ public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
             bucket.setBucketId(bucketId);
             bucket.setBucketPath(new File(path).getParent());
             if (TextUtils.equals(bucket.getBucketPath(), Environment.getExternalStorageDirectory().getAbsolutePath()))
-                bucketName = "根目录";
+                bucketName = context.getString(R.string.root_dir);
             bucket.setBucketName(bucketName);
             bucket.setCoverPath(thumbPath);
             bucketList.put(bucketId, bucket);
@@ -230,6 +248,14 @@ public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
         bucket.videoList.add(videoItem);
         BucketVideoNum bv = new BucketVideoNum(bucket, bucket.videoList.size() - 1);
         if (thumbPath == null) noList.put(_id, bv);
+    }
+
+    private void insertThumbDatabase() {
+        if (!thumbNeedInsertDatabase.isEmpty()) {
+            int size = thumbNeedInsertDatabase.size();
+            ContentValues[] cs = thumbNeedInsertDatabase.toArray(new ContentValues[size]);
+            DatabaseHelper.inserts(context, cs);
+        }
     }
 
     private void getThumbnail() {
@@ -261,6 +287,9 @@ public class LocalVideoHelper extends AsyncTask<Object, Object, Object> {
         bucketList.clear();
         thumbnailList.clear();
         thumbDatabase.clear();
+        this.contentResolver = null;
+        this.listLoader = null;
+        this.context = null;
     }
 
     public interface LoadVideoList {

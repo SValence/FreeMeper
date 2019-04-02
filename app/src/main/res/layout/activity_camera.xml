@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,7 +7,7 @@
     android:background="@color/black"
     tools:context=".function.camera.ActivityCamera">
 
-    <TextureView
+    <com.valence.freemeper.cusview.CameraFlashTextureView
         android:id="@+id/free_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,7 +34,8 @@
         android:textColor="@color/green"
         android:textSize="18sp" />
 
-    <ImageView
+    <com.valence.freemeper.cusview.ImageCallbackView
+        android:id="@+id/free_camera_switch"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="top|start"
@@ -45,14 +45,11 @@
         android:scaleType="centerInside"
         android:src="@mipmap/free_switch_camera" />
 
-    <ImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_gravity="bottom|center"
-        android:background="@drawable/bg_free_take_picture"
-        android:contentDescription="@string/app_name"
-        android:onClick="onTakePicture"
-        android:padding="5dp"
-        android:scaleType="centerInside" />
+    <include
+        layout="@layout/layout_camera_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="20dp" />
 
 </FrameLayout>

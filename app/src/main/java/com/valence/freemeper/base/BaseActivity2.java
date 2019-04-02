@@ -4,25 +4,17 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-
-import com.valence.freemeper.R;
-import com.valence.freemeper.tool.CommonMethod;
-import com.valence.freemeper.tool.SystemBarTintManager;
 
 /**
  * @author Valence
  * @version 1.0
  * @since 2017/09/03
- *
- * @deprecated Use {@link com.valence.freemeper.base.BaseActivity2} instead.
  */
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity2 extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,4 +43,10 @@ public class BaseActivity extends AppCompatActivity {
          *
          */
     }
+
+    public abstract void findView();
+
+    public abstract void initData();
+
+    public abstract void setListener();
 }

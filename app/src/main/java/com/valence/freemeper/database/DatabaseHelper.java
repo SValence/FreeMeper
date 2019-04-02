@@ -7,13 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.valence.freemeper.tool.AppContext;
 
+import timber.log.Timber;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "DatabaseHelper";
     private static final String THUMB_DATABASE_NAME = "thumb_database.db";
     public static final String THUMB_TABLE = "thumb_table";
     private static final int DATABASE_VERSION = 1;
@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 FILE_ID,
                 FILE_PATH,
                 FILE_THUMB_PATH);
-        Log.i(TAG, sql);
+        Timber.i(sql);
         db.execSQL(sql);
     }
 
@@ -54,21 +54,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void dropTable(SQLiteDatabase db) {
         String sql = String.format("DROP TABLE %s", THUMB_TABLE);
-        Log.i(TAG, sql);
+        Timber.i(sql);
         db.execSQL(sql);
     }
 
     public static void cleanTable(Context context) {
         initDatabase(context);
         String sql = "DELETE FROM " + THUMB_TABLE;
-        Log.i(TAG, sql);
-        AppContext.getInstance().db.execSQL(sql);
+        Timber.i(sql);
+        database.execSQL(sql);
         unInitDatabase();
-        Log.w(TAG, String.format("Table %s Has Cleaned", THUMB_TABLE));
+        Timber.w("Table %s Has Cleaned", THUMB_TABLE);
     }
 
     public static Cursor query(SQLiteDatabase db, String sql) {
-        Log.i(TAG, sql);
+        Timber.i(sql);
         return db.rawQuery(sql, null);
     }
 
@@ -76,15 +76,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         initDatabase(context);
         String id = (String) c.get(FILE_ID);
         String sql = "SELECT * FROM " + THUMB_TABLE + " WHERE " + FILE_ID + "='" + id + "'";
-        Log.i(TAG, sql);
-        Cursor cursor = AppContext.getInstance().db.rawQuery(sql, null);
+        Timber.i(sql);
+        Cursor cursor = database.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
-            if (updateRaw(AppContext.getInstance().db, c) <= 0)
-                Log.e(TAG, "Update Database Error!! " + FILE_ID + " = " + id);
-            else Log.i(TAG, "Update Database Success!! " + FILE_ID + " = " + id);
+            if (updateRaw(database, c) <= 0) {
+                Timber.d("Update Database Error!! No Record:" + FILE_ID + " = " + id);
+                database.insert(THUMB_TABLE, "", c);
+            } else Timber.i("Update Database Success!! " + FILE_ID + " = " + id);
+        } else {
+            database.insert(THUMB_TABLE, "", c);
         }
         cursor.close();
-        AppContext.getInstance().db.insert(THUMB_TABLE, "", c);
+        unInitDatabase();
+    }
+
+    public static void inserts(Context context, ContentValues[] cs) {
+        initDatabase(context);
+        database.beginTransaction();
+        for (ContentValues c : cs) {
+            database.insert(THUMB_TABLE, "", c);
+        }
+        database.setTransactionSuccessful();
+        database.endTransaction();
         unInitDatabase();
     }
 
@@ -99,16 +112,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static void initDatabase(Context context) {
         if (TextUtils.isEmpty(THUMB_DATABASE_NAME)) {
-            Log.e(TAG, "Database Name is Null!!!");
+            Timber.e("Database Name is Null!!!");
             return;
         }
-        if (AppContext.getInstance().db != null) {
-            Log.e(TAG, "Database Has Initialized!!!");
+        if (database != null) {
+            Timber.e("Database Has Initialized!!!");
             return;
         }
         database = new DatabaseHelper(context).getWritableDatabase();
         AppContext.getInstance().db = database;
-        Log.i(TAG, "DataBase Init-------" + THUMB_DATABASE_NAME);
+        Timber.i("DataBase Init-------%s", THUMB_DATABASE_NAME);
     }
 
     public static void unInitDatabase() {

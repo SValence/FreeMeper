@@ -45,6 +45,7 @@ import static android.provider.MediaStore.Video.Thumbnails.MINI_KIND;
 import static com.valence.freemeper.database.DatabaseHelper.FILE_ID;
 import static com.valence.freemeper.database.DatabaseHelper.FILE_PATH;
 import static com.valence.freemeper.database.DatabaseHelper.FILE_THUMB_PATH;
+import static com.valence.freemeper.tool.AppContext.THUMB_FILE_END;
 
 public class VideoListActivity extends BaseActivity implements IFindView, View.OnClickListener {
 
@@ -257,7 +258,7 @@ public class VideoListActivity extends BaseActivity implements IFindView, View.O
                         holder.disposable = Single.fromCallable(() -> {
                             Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(item.getVideoPath(), MINI_KIND);
                             if (bitmap == null) throw new IOException("Get Video BitMap Error");
-                            String filePath = AppContext.getThumbDirVideo() + item.getVideoName() + "_thumb.jpg";
+                            String filePath = AppContext.getThumbDirVideo() + item.getVideoName() + THUMB_FILE_END;
                             if (CommonMethod.saveBitmap2JPG(bitmap, filePath)) {
                                 ContentValues c = new ContentValues();
                                 c.put(FILE_ID, item.getVideoId());

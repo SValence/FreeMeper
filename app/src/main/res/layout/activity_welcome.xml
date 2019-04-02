@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:fitsSystemWindows="true"
     android:minHeight="?attr/actionBarSize"
     android:orientation="vertical"
@@ -10,64 +11,72 @@
 
     <Button
         android:id="@+id/free_welcome_skip"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_gravity="end|bottom"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_free_welcome_skip"
         android:gravity="center"
         android:text="@string/free_skip"
         android:textColor="@color/black" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="2"
-        android:orientation="horizontal"
-        tools:ignore="UseCompoundDrawables">
+    <FrameLayout
+        android:id="@+id/free_welcome_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/svg_free_welcome" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginStart="40dp"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/svg_free_welcome_logo" />
+
+            <TextView
+                android:id="@+id/free_welcome_app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+                android:layout_marginStart="5sp"
+                android:layout_marginBottom="2sp"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/deepGray"
+                android:textSize="24sp" />
+
+            <View style="@style/NULLView" />
+        </LinearLayout>
+
+        <View style="@style/NULLView" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/free_welcome_rights"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
             android:gravity="center"
-            android:text="@string/free_appName_EN"
-            android:textColor="@color/deepGray"
-            android:textSize="24sp" />
+            android:text="@string/free_welcome_allRights"
+            android:textColor="@color/gray"
+            android:textSize="18sp" />
 
-        <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="0sp"-->
-        <!--android:layout_marginTop="2sp"-->
-        <!--android:layout_weight="1"-->
-        <!--android:gravity="top"-->
-        <!--android:text="@string/free_appName_CN"-->
-        <!--android:textColor="@color/deepGray"-->
-        <!--android:textSize="24sp" />-->
-    </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/svg_free_logo" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/free_welcome_allRights"
-        android:textColor="@color/gray"
-        android:textSize="18sp" />
+        <ImageView
+            android:id="@+id/free_welcome_logo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/free_welcome_rights"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerInside"
+            android:src="@drawable/svg_free_logo" />
+    </RelativeLayout>
 </LinearLayout>

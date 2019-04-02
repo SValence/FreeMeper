@@ -23,13 +23,15 @@
             android:splitMotionEvents="false">
 
             <ImageView
+                android:id="@+id/free_about_logo"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="40dp"
                 android:layout_marginTop="40dp"
+                android:layout_marginBottom="40dp"
                 android:contentDescription="@null"
-                android:src="@drawable/svg_free_logo" />
+                android:src="@drawable/svg_free_logo"
+                android:visibility="visible" />
 
             <RelativeLayout
                 android:id="@+id/about_device_id"

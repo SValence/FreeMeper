@@ -1,6 +1,9 @@
 package com.valence.freemeper.function.camera;
 
 import android.Manifest;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -15,6 +18,8 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,16 +28,16 @@ import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
-import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.valence.freemeper.R;
-import com.valence.freemeper.base.BaseActivity;
+import com.valence.freemeper.base.BaseActivity2;
 import com.valence.freemeper.tool.AppContext;
 import com.valence.freemeper.tool.CommonMethod;
 
@@ -41,12 +46,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ActivityCamera extends BaseActivity {
+public class ActivityCamera extends BaseActivity2 implements View.OnClickListener {
 
     private static final String TAG = "ActivityCamera";
 
     //    private int height = 0, width = 0;
     private TextureView textureView;
+    private ImageView takePicture;
+    private ImageView viewFiles;
+    private ImageView startRecord;
+    private ImageView stopRecord;
+
     private CameraCaptureSession mPreviewSession;
     private CaptureRequest.Builder mCaptureRequestBuilder, takePictureBuilder;
     private CaptureRequest mCaptureRequest;
@@ -55,14 +65,8 @@ public class ActivityCamera extends BaseActivity {
     private int screenWidth, screenHeight;
     private CameraManager manager;
     private int cameraID;
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
+    private CameraCharacteristics chara;
+    private MediaScannerConnection mediaScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +74,61 @@ public class ActivityCamera extends BaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_camera);
+        findView();
+        initData();
+        setListener();
+    }
 
-        manager = (CameraManager) getSystemService(CAMERA_SERVICE);
+    @Override
+    public void findView() {
         textureView = findViewById(R.id.free_camera);
+        takePicture = findViewById(R.id.free_camera_picture);
+        startRecord = findViewById(R.id.free_camera_video);
+        stopRecord = findViewById(R.id.free_camera_stop_record);
+        viewFiles = findViewById(R.id.free_camera_files);
+    }
+
+    @Override
+    public void initData() {
+        manager = (CameraManager) getSystemService(CAMERA_SERVICE);
         textureView.setOpaque(true);
-        textureView.setSurfaceTextureListener(textureListener);
         cameraSTList = new ArrayList<>();
         pictureSizeList = new ArrayList<>();
-
         DisplayMetrics dm = getResources().getDisplayMetrics();
         screenHeight = dm.heightPixels;
         screenWidth = dm.widthPixels;
         cameraID = 0;
+
+        mediaScanner = new MediaScannerConnection(this, new MediaScannerConnection.MediaScannerConnectionClient() {
+            @Override
+            public void onMediaScannerConnected() {
+                Log.i(TAG, "MediaScannerConnection Connected");
+            }
+
+            @Override
+            public void onScanCompleted(String path, Uri uri) {
+                Log.i(TAG, "MediaScannerConnection Scan Completed----path:" + path);
+            }
+        });
+        mediaScanner.connect();
+    }
+
+    @Override
+    public void setListener() {
+
+        getLifecycle().addObserver(new LifecycleObserver() {
+            @OnLifecycleEvent(value = Lifecycle.Event.ON_DESTROY)
+            public void onDestroy() {
+                mediaScanner.disconnect();
+                Log.i(TAG, "MediaScannerConnection Disconnect");
+            }
+        });
+
+        textureView.setSurfaceTextureListener(textureListener);
+        takePicture.setOnClickListener(this);
+        startRecord.setOnClickListener(this);
+        stopRecord.setOnClickListener(this);
+        viewFiles.setOnClickListener(this);
     }
 
     private ImageReader imageReader;
@@ -99,7 +146,7 @@ public class ActivityCamera extends BaseActivity {
                 return;
             }
             String cameraId = id < 0 ? "0" : String.valueOf(id);
-            CameraCharacteristics chara = manager.getCameraCharacteristics(cameraId);
+            chara = manager.getCameraCharacteristics(cameraId);
             // 获取摄像头支持的配置属性
             StreamConfigurationMap map = chara.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             if (map == null) {
@@ -118,12 +165,12 @@ public class ActivityCamera extends BaseActivity {
                 return;
             }
             // 获取摄像头支持的最大尺寸
-            pictureSizeList = new ArrayList<>(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)));
-            Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new CompareSizesByArea());
+            pictureSizeList = new ArrayList<>(Arrays.asList(map.getOutputSizes(SurfaceTexture.class)));
+            Size largest = Collections.max(Arrays.asList(map.getOutputSizes(SurfaceTexture.class)), new CompareSizesByArea());
             // 创建一个ImageReader对象，用于获取摄像头的图像数据
             imageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, 2);
             // 设置获取图片的监听
-            imageReader.setOnImageAvailableListener(reader -> CommonMethod.saveImage(imageReader.acquireNextImage()), null);
+            imageReader.setOnImageAvailableListener(reader -> CommonMethod.saveCameraImage(imageReader.acquireNextImage(), mediaScanner, 0, null), null);
             // 获取最佳的预览尺寸
             cameraSTList = new ArrayList<>(Arrays.asList(map.getOutputSizes(SurfaceTexture.class)));
             previewSize = size == null ? chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), largest) : size;
@@ -210,7 +257,7 @@ public class ActivityCamera extends BaseActivity {
                         mCaptureRequest = mCaptureRequestBuilder.build();
                         mPreviewSession = session;
                         //设置反复捕获数据的请求，这样预览界面就会一直有数据显示
-                        mPreviewSession.setRepeatingRequest(mCaptureRequest, captureCallback, null);
+                        mPreviewSession.setRepeatingRequest(mCaptureRequest, null, null);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -317,6 +364,25 @@ public class ActivityCamera extends BaseActivity {
 //        }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.free_camera_video:
+                takePicture.setVisibility(View.GONE);
+                stopRecord.setVisibility(View.VISIBLE);
+                break;
+            case R.id.free_camera_stop_record:
+                stopRecord.setVisibility(View.GONE);
+                takePicture.setVisibility(View.VISIBLE);
+                break;
+            case R.id.free_camera_picture:
+                takePicture();
+                break;
+            case R.id.free_camera_files:
+                break;
+        }
+    }
+
     // 为Size定义一个比较器Comparator
     static class CompareSizesByArea implements Comparator<Size> {
         @Override
@@ -351,7 +417,10 @@ public class ActivityCamera extends BaseActivity {
     }
 
     public void showResolutionList(View view) {
-        if (cameraSTList == null || cameraSTList.isEmpty()) AppContext.showToast("支持分辨率为空");
+        if (cameraSTList == null || cameraSTList.isEmpty()) {
+            AppContext.showToast("支持分辨率为空");
+            return;
+        }
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("摄像头支持分辨率");
         CharSequence[] list = new CharSequence[cameraSTList.size()];
@@ -414,7 +483,7 @@ public class ActivityCamera extends BaseActivity {
         }
     }
 
-    public void onTakePicture(View view) {
+    public void takePicture() {
         try {
             if (cameraDevice == null) {
                 return;
@@ -428,10 +497,9 @@ public class ActivityCamera extends BaseActivity {
             // 获取设备方向
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             // 根据设备方向计算设置照片的方向
-            takePictureBuilder.set(CaptureRequest.JPEG_ORIENTATION
-                    , ORIENTATIONS.get(rotation));
+            takePictureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getJpegOrientation(chara, rotation));
             // 停止连续取景
-            mPreviewSession.stopRepeating();
+//            mPreviewSession.stopRepeating();
             //拍照
             CaptureRequest captureRequest = takePictureBuilder.build();
             //设置拍照监听
@@ -439,5 +507,30 @@ public class ActivityCamera extends BaseActivity {
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private int getJpegOrientation(CameraCharacteristics c, int deviceOrientation) {
+        if (c == null) {
+            return 0;
+        }
+        if (deviceOrientation == android.view.OrientationEventListener.ORIENTATION_UNKNOWN)
+            return 0;
+        int sensorOrientation = c.get(CameraCharacteristics.SENSOR_ORIENTATION);
+
+        // Round device orientation to a multiple of 90
+        deviceOrientation = (deviceOrientation + 45) / 90 * 90;
+
+        // Reverse device orientation for front-facing cameras
+        boolean facingFront = c.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT;
+        if (facingFront) deviceOrientation = -deviceOrientation;
+
+        // Calculate desired JPEG orientation relative to camera orientation to make
+        // the image upright relative to the device orientation
+
+        return (sensorOrientation + deviceOrientation + 360) % 360;
+    }
+
+    public void onRecordVideo(View view) {
+
     }
 }

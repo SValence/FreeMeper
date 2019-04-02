@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector>
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+            <!--<solid android:color="@color/transparent" />-->
+            <!--<stroke android:width="0dp" android:color="@color/defaultThemeColor" />-->
+
+            <!-- 说明: 使用渐变效果时, 不设置 android:gradientRadius 具体值, 会导致报错, inflate error -->
+            <gradient
+                android:startColor="#FAE8E8E8"
+                android:endColor="#FA808080"
+                android:centerX="0.5"
+                android:centerY="0.5"
+                android:gradientRadius="1000"
+                android:type="radial"
+                />
+        </shape>
+    </item>
+</selector>
